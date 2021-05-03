@@ -9,7 +9,10 @@
 .include "macro.s"
 
 # personagem para teste
-.include "./Imagens/lamar.data"
+.include "./Imagens/lamaresq.data"
+.include "./Imagens/lamardir.data"
+.include "./Imagens/lamarbaixo.data"
+.include "./Imagens/lamarcima.data"
 
 # mapa para teste
 .include "./Imagens/MAPA1.data"
@@ -17,10 +20,18 @@
 # macro para o menu funcional
 .include "menu.s"
 
-.text
-Menu
-MAIN:
+# chao para preencher onde o personagem estava
+.include "./Imagens/meiochao.data"
 
-# Ate o momento so mostra as imagens em sequencia.
-# So vou colocar a musica depois que estiver tudo
-# funcionando pra facilitar o teste.
+.text
+
+Menu
+
+MAIN:
+Imprimepersonagem(0xFF008C20, NEXT)
+
+NEXT:
+
+Andapersonagem()
+
+

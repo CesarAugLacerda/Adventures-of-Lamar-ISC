@@ -205,10 +205,11 @@ SELEÇAO_MENU:
 START:
 	Impressao(Historia, 0xFF000000, 0, IMPRIME_FASE1)		#imagem contando historia do jogo
 IMPRIME_FASE1:
-	Impressao(MAPA1, 0xFF000000, 8000, MAIN)		#print da primeira fase com delay de 8seg para se ler a historia
+	Impressao(MAPA1, 0xFF000000, 8000, MAIN)			#print da primeira fase com delay de 8seg para se ler a historia
 		#MAIN seria o inicio da gameplay funçao localizada em ADVLAMAR.s
 PASSWORD:
 	#___________vazio, fazer tela de password
 
-RETORNA: ret		
+RETORNA: ret
+		
 .end_macro
