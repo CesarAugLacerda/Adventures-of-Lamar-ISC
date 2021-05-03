@@ -2,7 +2,7 @@
 Projeto final de ISC 2020/2
 
 Para essa semana:
-- Otimizar os macros de andar do personagem
+- ~~Otimizar os macros de andar do personagem~~
 - Implementar colisão
 - Interface de vidas e poderes
 - Tela de início de fase e história
