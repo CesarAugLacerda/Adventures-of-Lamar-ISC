@@ -24,8 +24,8 @@
 .include "./Imagens/meiochao.data"
 
 .text
-
-Menu
+MENU:
+	Menu()
 
 MAIN:
 Imprimepersonagem(0xFF008C20, NEXT)
