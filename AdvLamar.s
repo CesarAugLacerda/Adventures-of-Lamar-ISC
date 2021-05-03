@@ -28,8 +28,7 @@
 Menu
 
 MAIN:
-
-Imprimepersonagem(0xFF008C22, NEXT)
+Imprimepersonagem(0xFF008C20, NEXT)
 
 NEXT:
 
