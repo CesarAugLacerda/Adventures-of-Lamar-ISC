@@ -6,8 +6,6 @@
 
 
 
-
-
 ###########################################
 #                                         #
 #             Imprimir imagens            #
@@ -128,7 +126,7 @@ PULA_LINHA_APAGA:
 # e atualizar esse registrador com o novo endereco do personagem.
 # Para isso vou fazer um macro separado so para imprimir o personagem.
 
-.macro Imprimepersonagem(%hex, %funçao)
+.macro Imprimepersonagem(%hexf0, %funçao)
 	la t0, lamardir		#endereço de imagem
 	lw t1, 0(t0) 		#x(linhas)
 	lw t2, 4(t0) 		#y(colunas)
@@ -136,33 +134,45 @@ PULA_LINHA_APAGA:
 	mul t3, t1, t2		#numero total de pixels
 	addi t0, t0, 8		#Primeiro pixel
 	li t4, 0		#contador
-	li s10, %hex		#armazena o endereco inicial separadamente para preencher o chao quando o personagem andar.
-	li s0, %hex  		#endereço inicial de print/frame
+	li s10, %hexf0		#armazena o endereco inicial separadamente para preencher o chao quando o personagem andar.
+	li s0, %hexf0  		#endereço inicial de print/frame
+
 	
 	
 #Já com a imagem carregada, ocorre impressao nesse loop	
-IMPRIME:
-	beq t4, t3, %funçao		#quando finalizar, pula para a função desejada
+IMPRIME_F0:
+	beq t4, t3, COMPENSA_F0		#quando finalizar, pula para a função desejada
 	lw t5, 0(t0)
 	sw t5, 0(s0)
 	addi t0, t0, 4
 	addi s0, s0, 4	
 	addi t4, t4, 4
-	beq t4, t6, PULA		#quando chegar ao final de uma linha, pula para a seguinte	
-	j 	IMPRIME
+	beq t4, t6, PULA_F0		#quando chegar ao final de uma linha, pula para a seguinte	
+	j 	IMPRIME_F0
 	
-	PULA:
+	PULA_F0:
 	add t6, t6, t1			#incrementa o numero de pixels impressos em 16 para o próximo beq ainda pular linha.
 	addi s0, s0, 0x130
-	j IMPRIME
+	j IMPRIME_F0
+
+#Tira 8 pixels que já serão somados em "APAGA", isso evita que ele dê um pulo de
+#8 pixels na primeira vez que anda e deixa metade da primeira sprite sem apagar.
+COMPENSA_F0:
+addi s10, s10, -8
 
 .end_macro
 
 ###################################################################
 ###################################################################
 
-.macro Apagachao(%dir, %adds9)
-# %dir é o valor que vai ser somado ou subtraído do endereço inicial para apagar o lolo anterior
+# O s9 é necessário para manipular os valores da impressão do personagem fora de s10. 
+# Tentei usar somente o s10, onde o endereço inicial do personagem é armazenado diretamente, 
+# mas fazer manipulações direto nele causa problemas. O ideal é que s10 apenas guarde os 
+# valores atualizados.
+
+.macro Apagachao(%dir)
+# %dir é o valor que vai ser somado ou subtraído do endereço inicial para apagar o lolo anterior e definir a 
+# próxima posição dele.
 
 APAGA:
 	la t0, meiochao		#endereço de imagem
@@ -172,7 +182,7 @@ APAGA:
 	mul t3, t1, t2		#numero total de pixels
 	addi t0, t0, 8		#Primeiro pixel
 	li t4, 0		#contador
-	addi s9, s10, 0		#guarda em s9 o endereço em que deve começar a apagar
+	addi s9, s10, 8		#guarda em s9 o endereço em que deve começar a apagar
 
 APAGA_IMPRIME:
 	bge t4, t3, NOVOVAL		#quando finalizar, pula para a função desejada
@@ -185,17 +195,15 @@ APAGA_IMPRIME:
 	j 	APAGA_IMPRIME
 	
 	APAGA_PULA:
-	addi t6, t6, 24			#incrementa o numero de pixels impressos em 24 para o próximo beq ainda pular linha.
-	addi s9, s9, 0x128		
+	addi t6, t6, 16			#incrementa o numero de pixels impressos em 16 para o próximo beq ainda pular linha.
+	addi s9, s9, 0x130		
 	j APAGA_IMPRIME
 
 NOVOVAL:
-	li t5, 0x1300			#retira os valores que foram somados para imprimir na linha seguinte, voltando ao "canto superior esquerdo"
-	sub s9, s9, t5			#da imagem.
 	
-	addi s9, s9, %adds9
 	li t5, %dir
-	add s10, s10, t5		# Passa o endereço incial que vai ser apagado 16 pixels para frente
+	add s10, s10, t5		# Passa o endereço incial que vai ser apagado %dir pixels para a direção que vai andar
+
 
 .end_macro
 
@@ -204,7 +212,7 @@ NOVOVAL:
 
 .macro Anda(%sprite, %INC)
 # %sprite pede a sprite da direção em que a instrução está levando o personagem
-# "lamardir", "lamaresq", "lamarcima", "lamarbaixo"
+# "lamardir", "lamaresq", "lamarcima", "lamarbaixo" ou seus correspondentes do frame 1 para animar.
 
 # %INC pula de volta para receber o input do teclado, no geral vamos tentar usar sempre INC mesmo,
 # mas é preciso incluir toda vez.
@@ -249,6 +257,7 @@ IMPRIME:
 	li s0, 0 		# reseta o s0
 
 INC:	addi s0, s0, 1		# Incrementa o contador
+	#Trocaframe()
 	jal RECEBE_TECLA
 	j INC			# Retorna ao contador
 
@@ -263,21 +272,25 @@ RECEBE_TECLA:
 	li t5, 97			# ascii de "a" para verificar se foi pressionado
 	li t6, 100			# ascii de "d" para verificar se foi pressionado
 	li t0, 102			# ascii de "f" para verificar se foi pressionado
+	
 	beq t2, t6, APAGADIR		# anda para a direita
 	beq t2, t5, APAGAESQ		# anda para a esquerda
 	beq t2, t4, APAGACIMA		# anda para cima
 	beq t2, t3, APAGABAIXO		# anda para baixo
+	
+	li t0, 27			# ascii de "esc" para verificar se foi pressionado
+	beq t2, t0, VIDA_DIMINUI 	#seppuku
 			
 
 APAGADIR:
-Apagachao(8, 0)
+Apagachao(8)
 
 ANDA_DIR:
 Anda(lamardir, INC)	
 	
 
 APAGAESQ:
-Apagachao(-8, -24)
+Apagachao(-8)
 
 
 ANDA_ESQ:
@@ -285,14 +298,14 @@ Anda(lamaresq, INC)
 	
 	
 APAGACIMA:
-Apagachao(-0xA00, 0)
+Apagachao(-0xA00)
 			
 ANDA_CIMA:
 Anda(lamarcima, INC)
 
 
 APAGABAIXO:
-Apagachao(0xA00, 0)
+Apagachao(0xA00)
 
 ANDA_BAIXO:
 Anda(lamarbaixo, INC)
@@ -331,3 +344,23 @@ RETORNA:ret
 	beq s5, t0, %funçao_de_acerto
 	j	%funçao
 .end_macro	
+
+
+###########################################
+#                                         #
+#            Print screen	          #
+#                                         #
+###########################################
+.macro print_int_screen(%r, %x, %y, %cor)
+li a0, %r		# Int a ser impresso
+li a1, %x		# Coluna
+li a2, %y		# Linha
+li a3, %cor
+li a7, 101		# PrintInt
+ecall
+.end_macro
+
+.macro vida_lamar(%vida, %funçao)
+print_int_screen(%vida, 263, 35, 100)
+j %funçao
+.end_macro
