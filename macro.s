@@ -379,7 +379,7 @@ IMPRIME_F0:
 	addi s0, s0, 0x130
 	j IMPRIME_F0
 termf0:
-Trocaframe(50)		# Delay para a animação poder ser vista.		 
+#Trocaframe(150)		# Delay para a animação poder ser vista.		 
 
 #-------------------------------FRAME 1---------------------------------#	
 	ANDA_F1:
@@ -423,7 +423,7 @@ FIM:
 	li s0, 0 		# reseta o s0
 
 INC:	addi s0, s0, 1		# Incrementa o contador
-	Trocaframe(10)		# Alterna entre os frames 0 e 1 com 10ms de delay.
+	Trocaframe(40)		# Alterna entre os frames 0 e 1 com 10ms de delay.
 	jal RECEBE_TECLA
 	j INC			# Retorna ao contador
 
@@ -453,7 +453,7 @@ Apagachao(8)
 
 ANDA_DIR:
 Anda(lamardir_walk)	#Sprite andando para animação
-Apagachao(8)		#Apaga a sprite para não ocorrer sobreposição
+Apagachao(0)		#Apaga a sprite para não ocorrer sobreposição
 Anda(lamardir)		#Sprite parado novamente
 
 j INC	
@@ -465,7 +465,7 @@ Apagachao(-8)
 
 ANDA_ESQ:
 Anda(lamaresq_walk)
-Apagachao(-8)
+Apagachao(0)
 Anda(lamaresq)
 j INC
 	
@@ -475,7 +475,7 @@ Apagachao(-0xA00)
 			
 ANDA_CIMA:
 Anda(lamarcima_walk)
-Apagachao(-0xA00)
+Apagachao(0)
 Anda(lamarcima)
 j INC
 
@@ -485,7 +485,7 @@ Apagachao(0xA00)
 
 ANDA_BAIXO:
 Anda(lamarbaixo_walk)
-Apagachao(0xA00)
+Apagachao(0)
 Anda(lamarbaixo)
 j INC
 
