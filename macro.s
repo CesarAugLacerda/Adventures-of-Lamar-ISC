@@ -4,6 +4,18 @@
 #                                         #
 ###########################################
 
+.macro Trocaframe(%delay)
+
+#Delay antes de trocar o frame
+li a7, 32	
+li a0, %delay
+ecall
+
+li a5, 0xFF200604	#Carrega o endereço responsável pela troca de frame
+lw t1, 0(a5)		#Carrega-o em t1 para manipular
+xori t1, t1, 0x001 	#Inverte o valor atual
+sw t1, 0(a5)		#Armazena de volta em a5 o valor invertido
+.end_macro
 
 
 ###########################################
@@ -11,19 +23,26 @@
 #             Imprimir imagens            #
 #                                         #
 ###########################################
+# Todos os macros de impressão imprimem a imagem nos dois frames, separados em xxxx_F0 e xxxx_F1
+# para evitar que algo seja impresso apenas em um e cause flickering na imagem.
 
-.macro Impressao(%data, %hex, %time, %funçao)
+
+
+.macro Impressao(%data, %hexf0, %hexf1, %time, %funçao)
 #%data = arquivo.data a ser imprimido
-#%hex = endereço inicial de print/frame----> 0xFF000000, endereço inicial no frame 0	
+#%hex = endereço inicial de print/frame----> 0xFF000000, endereço inicial no frame 0.
+#a diferença entre hexf0 e hexf1 deve ser apenas o FF0 / FF1.	
 #%time = Pausa em milissegundos para mostrar a imagem,caso coloque zero,não havera pausa
 #%funçao = nome de funçao para se seguir assim que a imagem for por completo imprimida
+
+F0:				#imprime a imagem no frame 0
 	la t0, %data		#endereço de imagem
 	lw t1, 0(t0) 		#x(linhas)
 	lw t2, 4(t0) 		#y(colunas)
 	mul t3, t1, t2		#numero total de pixels
 	addi t0, t0, 8		#Primeiro pixel
 	li t4, 0		#contador
-	li s0, %hex  	#endereço inicial de print/frame
+	li s0, %hexf0  	#endereço inicial de print no frame 0
 	
 # Pausa em milissegundos para mostrar a imagem
 li a7, 32
@@ -31,31 +50,48 @@ li a0, %time
 ecall	
 	
 #Já com a imagem carregada, ocorre impressao nesse loop	
-IMPRIME:
+IMPRIME_F0:
+	beq t4, t3, F1		#quando finalizar, pula para a função desejada
+	lw t5, 0(t0)
+	sw t5, 0(s0)
+	addi t0, t0, 4
+	addi s0, s0, 4	
+	addi t4, t4, 4	
+	j 	IMPRIME_F0
+	
+F1:				#imprime a imagem no frame 1
+	la t0, %data		#endereço de imagem
+	lw t1, 0(t0) 		#x(linhas)
+	lw t2, 4(t0) 		#y(colunas)
+	mul t3, t1, t2		#numero total de pixels
+	addi t0, t0, 8		#Primeiro pixel
+	li t4, 0		#contador
+	li s0, %hexf1  	#endereço inicial de print no frame 1
+	
+
+#Já com a imagem carregada, ocorre impressao nesse loop	
+IMPRIME_F1:
 	beq t4, t3, %funçao		#quando finalizar, pula para a função desejada
 	lw t5, 0(t0)
 	sw t5, 0(s0)
 	addi t0, t0, 4
 	addi s0, s0, 4	
 	addi t4, t4, 4	
-	j 	IMPRIME	
+	j 	IMPRIME_F1		
 .end_macro
 
 #--------------------------------------------------------------#
 
 
-.macro Impressaopequena(%data, %hex, %time, %pula, %funçao)
+.macro Impressaopequena(%data, %hexf0, %hexf1, %time, %pula, %funçao)
 #Mesma função, mas feita para imprimir imagens de tamanho específico em um lugar
 #específico da tela.
+#Lembre-se que hexf0 e hexf1 devem ser iguais, salvo o bit que indica o frame: FF"0" ou FF"1"
 #%pula = valor em hex de quantos pixels se deve pular para começar a imprimir
 # na próxima linha.
 
-# para imprimir em lugares especificos tem que ser byte por byte, porque alguns enderecos estao no
-# meio de uma word e nao aceitam que uma word comece neles.
-# por exemplo: uma word comeca em 0xFFFF0010 e termina em 0xFFFF0014, pois sao enderecos word-aligned
-# ou seja, para comecar a imprimir em um endereco que esteja dentro de um intervalo de 4 desses, a unica
-# forma e byte a byte.
-
+#-------------------------------FRAME 0---------------------------------#
+F0:
 	la t0, %data		#endereço de imagem
 	lw t1, 0(t0) 		#x(linhas)
 	lw t2, 4(t0) 		#y(colunas)
@@ -63,7 +99,7 @@ IMPRIME:
 	mul t3, t1, t2		#numero total de pixels
 	addi t0, t0, 8		#Primeiro pixel
 	li t4, 0		#contador
-	li s0, %hex  		#endereço inicial de print/frame
+	li s0, %hexf0  		#endereço inicial de print no frame 0
 	
 # Pausa em milissegundos para mostrar a imagem
 li a7, 32
@@ -71,21 +107,48 @@ li a0, %time
 ecall	
 	
 #Já com a imagem carregada, ocorre impressao nesse loop	
-IMPRIME:
+IMPRIME_F0:
+	beq t4, t3, F1		#quando finalizar, pula para a função desejada
+	lb t5, 0(t0)
+	sb t5, 0(s0)
+	addi t0, t0, 1
+	addi s0, s0, 1	
+	addi t4, t4, 1
+	beq t4, t6, PULA_F0		#quando chegar ao final de uma linha, pula para a seguinte	
+	j 	IMPRIME_F0
+	
+	PULA_F0:
+	add t6, t6, t1			#incrementa o numero de pixels impressos pelo n de linhas para o próximo beq ainda pular linha.
+	addi s0, s0, %pula
+	j IMPRIME_F0	
+	
+#-------------------------------FRAME 1---------------------------------#	
+F1:	
+	la t0, %data		#endereço de imagem
+	lw t1, 0(t0) 		#x(linhas)
+	lw t2, 4(t0) 		#y(colunas)
+	lw t6, 0(t0)            #armazena o n de linhas da imagem para incrementar em t1 sem ser alterado
+	mul t3, t1, t2		#numero total de pixels
+	addi t0, t0, 8		#Primeiro pixel
+	li t4, 0		#contador
+	li s0, %hexf1  		#endereço inicial de print no frame 1
+	
+	
+#Já com a imagem carregada, ocorre impressao nesse loop	
+IMPRIME_F1:
 	beq t4, t3, %funçao		#quando finalizar, pula para a função desejada
 	lb t5, 0(t0)
 	sb t5, 0(s0)
 	addi t0, t0, 1
 	addi s0, s0, 1	
 	addi t4, t4, 1
-	beq t4, t6, PULA		#quando chegar ao final de uma linha, pula para a seguinte	
-	j 	IMPRIME
+	beq t4, t6, PULA_F1		#quando chegar ao final de uma linha, pula para a seguinte	
+	j 	IMPRIME_F1
 	
-	PULA:
+	PULA_F1:
 	add t6, t6, t1			#incrementa o numero de pixels impressos pelo n de linhas para o próximo beq ainda pular linha.
 	addi s0, s0, %pula
-	j IMPRIME	
-	
+	j IMPRIME_F1		
 .end_macro
 
 #---------------------------------------------------------------------#
@@ -126,7 +189,10 @@ PULA_LINHA_APAGA:
 # e atualizar esse registrador com o novo endereco do personagem.
 # Para isso vou fazer um macro separado so para imprimir o personagem.
 
-.macro Imprimepersonagem(%hexf0, %funçao)
+.macro Imprimepersonagem(%hexf0, %hexf1, %funçao)
+
+#-------------------------------FRAME 0---------------------------------#
+IMPRIMEPER_F0:
 	la t0, lamardir		#endereço de imagem
 	lw t1, 0(t0) 		#x(linhas)
 	lw t2, 4(t0) 		#y(colunas)
@@ -160,6 +226,41 @@ IMPRIME_F0:
 COMPENSA_F0:
 addi s10, s10, -8
 
+#-------------------------------FRAME 1---------------------------------#
+IMPRIMEPER_F1:
+	la t0, lamardir		#endereço de imagem
+	lw t1, 0(t0) 		#x(linhas)
+	lw t2, 4(t0) 		#y(colunas)
+	lw t6, 0(t0)            #armazena o n de linhas da imagem para incrementar em t1 sem ser alterado
+	mul t3, t1, t2		#numero total de pixels
+	addi t0, t0, 8		#Primeiro pixel
+	li t4, 0		#contador
+	li a4, %hexf1		#armazena o endereco inicial separadamente para preencher o chao quando o personagem andar. // EQUIVALENTE AO S10
+	li a3, %hexf1  		#endereço inicial de print/frame // EQUIVALENTE AO S0
+
+	
+	
+#Já com a imagem carregada, ocorre impressao nesse loop	
+IMPRIME_F1:
+	beq t4, t3, COMPENSA_F1		#quando finalizar, pula para a função desejada
+	lw t5, 0(t0)
+	sw t5, 0(a3)
+	addi t0, t0, 4
+	addi a3, a3, 4	
+	addi t4, t4, 4
+	beq t4, t6, PULA_F1		#quando chegar ao final de uma linha, pula para a seguinte	
+	j 	IMPRIME_F1
+	
+	PULA_F1:
+	add t6, t6, t1			#incrementa o numero de pixels impressos em 16 para o próximo beq ainda pular linha.
+	addi a3, a3, 0x130
+	j IMPRIME_F1
+
+#Tira 8 pixels que já serão somados em "APAGA", isso evita que ele dê um pulo de
+#8 pixels na primeira vez que anda e deixa metade da primeira sprite sem apagar.
+COMPENSA_F1:
+addi a4, a4, -8
+
 .end_macro
 
 ###################################################################
@@ -173,8 +274,8 @@ addi s10, s10, -8
 .macro Apagachao(%dir)
 # %dir é o valor que vai ser somado ou subtraído do endereço inicial para apagar o lolo anterior e definir a 
 # próxima posição dele.
-
-APAGA:
+#-------------------------------FRAME 0---------------------------------#
+APAGA_F0:
 	la t0, meiochao		#endereço de imagem
 	lw t1, 0(t0) 		#x(linhas)
 	lw t2, 4(t0) 		#y(colunas)
@@ -184,41 +285,72 @@ APAGA:
 	li t4, 0		#contador
 	addi s9, s10, 8		#guarda em s9 o endereço em que deve começar a apagar
 
-APAGA_IMPRIME:
-	bge t4, t3, NOVOVAL		#quando finalizar, pula para a função desejada
+APAGA_IMPRIME_F0:
+	bge t4, t3, NOVOVAL_F0		#quando finalizar, pula para a função desejada
 	lw t5, 0(t0)
 	sw t5, 0(s9)
 	addi t0, t0, 4
 	addi s9, s9, 4	
 	addi t4, t4, 4
-	beq t4, t6, APAGA_PULA		#quando chegar ao final de uma linha, pula para a seguinte	
-	j 	APAGA_IMPRIME
+	beq t4, t6, APAGA_PULA_F0		#quando chegar ao final de uma linha, pula para a seguinte	
+	j 	APAGA_IMPRIME_F0
 	
-	APAGA_PULA:
+	APAGA_PULA_F0:
 	addi t6, t6, 16			#incrementa o numero de pixels impressos em 16 para o próximo beq ainda pular linha.
 	addi s9, s9, 0x130		
-	j APAGA_IMPRIME
+	j APAGA_IMPRIME_F0
 
-NOVOVAL:
+NOVOVAL_F0:
 	
 	li t5, %dir
 	add s10, s10, t5		# Passa o endereço incial que vai ser apagado %dir pixels para a direção que vai andar
 
+#-------------------------------FRAME 1---------------------------------#
+APAGA_F1:
+	la t0, meiochao		#endereço de imagem
+	lw t1, 0(t0) 		#x(linhas)
+	lw t2, 4(t0) 		#y(colunas)
+	lw t6, 0(t0)            #armazena o n de linhas da imagem para incrementar em t1 sem ser alterado
+	mul t3, t1, t2		#numero total de pixels
+	addi t0, t0, 8		#Primeiro pixel
+	li t4, 0		#contador
+	addi a2, a4, 8		#guarda em s9 o endereço em que deve começar a apagar
+
+APAGA_IMPRIME_F1:
+	bge t4, t3, NOVOVAL_F1		#quando finalizar, pula para a função desejada
+	lw t5, 0(t0)
+	sw t5, 0(a2)
+	addi t0, t0, 4
+	addi a2, a2, 4	
+	addi t4, t4, 4
+	beq t4, t6, APAGA_PULA_F1		#quando chegar ao final de uma linha, pula para a seguinte	
+	j 	APAGA_IMPRIME_F1
+	
+	APAGA_PULA_F1:
+	addi t6, t6, 16			#incrementa o numero de pixels impressos em 16 para o próximo beq ainda pular linha.
+	addi a2, a2, 0x130		
+	j APAGA_IMPRIME_F1
+
+NOVOVAL_F1:
+	
+	li t5, %dir
+	add a4, a4, t5		# Passa o endereço incial que vai ser apagado %dir pixels para a direção que vai andar
 
 .end_macro
 
 ###################################################################
 ###################################################################
 
-.macro Anda(%sprite, %INC)
+.macro Anda(%sprite)
 # %sprite pede a sprite da direção em que a instrução está levando o personagem
 # "lamardir", "lamaresq", "lamarcima", "lamarbaixo" ou seus correspondentes do frame 1 para animar.
 
 # %INC pula de volta para receber o input do teclado, no geral vamos tentar usar sempre INC mesmo,
 # mas é preciso incluir toda vez.
 
-ANDA:
-	la t0, %sprite		#endereço de imagem
+#-------------------------------FRAME 0---------------------------------#
+ANDA_F0:
+	la t0, %sprite	#endereço de imagem
 	lw t1, 0(t0) 		#x(linhas)
 	lw t2, 4(t0) 		#y(colunas)
 	lw t6, 0(t0)            #armazena o n de linhas da imagem para incrementar em t1 sem ser alterado
@@ -232,21 +364,55 @@ ANDA:
 	
 	
 #Já com a imagem carregada, ocorre impressao nesse loop	
-IMPRIME:
-	beq t4, t3, %INC			#quando finalizar, pula para a função desejada
+IMPRIME_F0:
+	beq t4, t3, termf0			#quando finalizar, pula para a função desejada
 	lw t5, 0(t0)
 	sw t5, 0(s0)
 	addi t0, t0, 4
 	addi s0, s0, 4	
 	addi t4, t4, 4
-	beq t4, t6, PULA		#quando chegar ao final de uma linha, pula para a seguinte	
-	j 	IMPRIME
+	beq t4, t6, PULA_F0		#quando chegar ao final de uma linha, pula para a seguinte	
+	j 	IMPRIME_F0
 	
-	PULA:
+	PULA_F0:
 	add t6, t6, t1			#incrementa o numero de pixels impressos em 16 para o próximo beq ainda pular linha.
 	addi s0, s0, 0x130
-	j IMPRIME
+	j IMPRIME_F0
+termf0:
+Trocaframe(50)		# Delay para a animação poder ser vista.		 
+
+#-------------------------------FRAME 1---------------------------------#	
+	ANDA_F1:
+	la t0, %sprite	#endereço de imagem
+	lw t1, 0(t0) 		#x(linhas)
+	lw t2, 4(t0) 		#y(colunas)
+	lw t6, 0(t0)            #armazena o n de linhas da imagem para incrementar em t1 sem ser alterado
+	mul t3, t1, t2		#numero total de pixels
+	addi t0, t0, 8		#Primeiro pixel
+	li t4, 0		#contador
+	li a2, 0  		#endereço inicial de print/frame da proxima posicao do personagem
+	add a3, a4, zero	#armazena em s9 o endereço em que o personagem deve ser impresso
+	add a2, a2, a3		#passa o endereço para s0, de forma a não manipular diretamente no s9
+	addi a2, a2, 8		#soma 8 pixels no endereco inicial, que e a quantidade que o personagem anda
 	
+
+#Já com a imagem carregada, ocorre impressao nesse loop	
+IMPRIME_F1:
+	beq t4, t3, FIM			#quando finalizar, pula para a função desejada
+	lw t5, 0(t0)
+	sw t5, 0(a2)
+	addi t0, t0, 4
+	addi a2, a2, 4	
+	addi t4, t4, 4
+	beq t4, t6, PULA_F1		#quando chegar ao final de uma linha, pula para a seguinte	
+	j 	IMPRIME_F1
+	
+	PULA_F1:
+	add t6, t6, t1			#incrementa o numero de pixels impressos em 16 para o próximo beq ainda pular linha.
+	addi a2, a2, 0x130
+	j IMPRIME_F1
+
+FIM:	
 .end_macro
 
 ###################################################################
@@ -257,7 +423,7 @@ IMPRIME:
 	li s0, 0 		# reseta o s0
 
 INC:	addi s0, s0, 1		# Incrementa o contador
-	#Trocaframe()
+	Trocaframe(10)		# Alterna entre os frames 0 e 1 com 10ms de delay.
 	jal RECEBE_TECLA
 	j INC			# Retorna ao contador
 
@@ -286,7 +452,11 @@ APAGADIR:
 Apagachao(8)
 
 ANDA_DIR:
-Anda(lamardir, INC)	
+Anda(lamardir_walk)	#Sprite andando para animação
+Apagachao(8)		#Apaga a sprite para não ocorrer sobreposição
+Anda(lamardir)		#Sprite parado novamente
+
+j INC	
 	
 
 APAGAESQ:
@@ -294,21 +464,30 @@ Apagachao(-8)
 
 
 ANDA_ESQ:
-Anda(lamaresq, INC)
+Anda(lamaresq_walk)
+Apagachao(-8)
+Anda(lamaresq)
+j INC
 	
 	
 APAGACIMA:
 Apagachao(-0xA00)
 			
 ANDA_CIMA:
-Anda(lamarcima, INC)
+Anda(lamarcima_walk)
+Apagachao(-0xA00)
+Anda(lamarcima)
+j INC
 
 
 APAGABAIXO:
 Apagachao(0xA00)
 
 ANDA_BAIXO:
-Anda(lamarbaixo, INC)
+Anda(lamarbaixo_walk)
+Apagachao(0xA00)
+Anda(lamarbaixo)
+j INC
 
 RETORNA:ret												
 .end_macro
@@ -351,16 +530,18 @@ RETORNA:ret
 #            Print screen	          #
 #                                         #
 ###########################################
-.macro print_int_screen(%r, %x, %y, %cor)
+.macro print_int_screen(%r, %x, %y, %cor, %frame)
 li a0, %r		# Int a ser impresso
 li a1, %x		# Coluna
 li a2, %y		# Linha
 li a3, %cor
+li a4, %frame		# Define o frame em que será impresso
 li a7, 101		# PrintInt
 ecall
 .end_macro
 
 .macro vida_lamar(%vida, %funçao)
-print_int_screen(%vida, 263, 35, 100)
+print_int_screen(%vida, 263, 35, 100, 0)
+print_int_screen(%vida, 263, 35, 100, 1)
 j %funçao
 .end_macro

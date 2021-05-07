@@ -12,9 +12,13 @@
 
 # personagem para teste
 .include "./Imagens/lamaresq.data"
+.include "./Imagens/lamaresq_walk.data"
 .include "./Imagens/lamardir.data"
+.include "./Imagens/lamardir_walk.data"
 .include "./Imagens/lamarbaixo.data"
+.include "./Imagens/lamarbaixo_walk.data"
 .include "./Imagens/lamarcima.data"
+.include "./Imagens/lamarcima_walk.data"
 
 # mapa para teste
 .include "./Imagens/MAPA1.data"
@@ -65,7 +69,6 @@ VIDA_0:
 vida_lamar(0, IMPRIME_PERSONAGEM1)
 
 
-
 VIDA_DIMINUI:
 li t0, 1
 sub s7, s7, t0				#sempre que lamar morrer diminui -1 de vida(s8)
@@ -75,10 +78,11 @@ j MAIN
 #FASE1
 MAIN:
 IMPRIME_FASE1:
-	Impressao(MAPA1, 0xFF000000, 0, VIDA)		#print da primeira fase com delay de 8seg para se ler a historia
+	Impressao(MAPA1, 0xFF000000, 0xFF100000, 0, VIDA)
+			#print da primeira fase com delay de 8seg para se ler a historia
 		#MAIN seria o inicio da gameplay funçao localizada em ADVLAMAR.s
 IMPRIME_PERSONAGEM1:
-Imprimepersonagem(0xFF008C20, NEXT)
+Imprimepersonagem(0xFF008C20, 0xFF108C20, NEXT)
 
 NEXT:
 Andapersonagem()

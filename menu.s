@@ -24,17 +24,17 @@
 .text
 #====================MENU=================================
 # Prepara os endereços para printar o menu na tela
-	Impressao(menu1, 0xFF000000, 0, MENU_F)
+	Impressao(menu1, 0xFF000000, 0xFF100000, 0, MENU_F)
 
 # Prepara os enderecos para printar a segunda parte do menu
 MENU_F:
-	Impressao(menu2,0xFF000000,1000,MUSICA)
+	Impressao(menu2,0xFF000000, 0xFF100000, 1000, MUSICA)
 
 MUSICA:		# Vazio ate que o menu esteja pronto
 
 # Prepara os enderecos para printar a segunda parte do menu e entra para a seta de seleção do menu
 MENU_TXT: 
-	Impressao(menu3,0xFF000000,0,SETA)
+	Impressao(menu3,0xFF000000, 0xFF100000, 0, SETA)
 #========================================================
 
 SETA:
@@ -207,11 +207,11 @@ SELEÇAO_MENU:
 	beq s8, t0, PASSWORD		#s8 = 1. vai para PASSWORD
 #+++++++++++++++++++++++++++MENU START++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 START:
-	Impressao(Historia, 0xFF000000, 0, DELAYHIST)		#imagem contando historia do jogo
+	Impressao(Historia, 0xFF000000, 0xFF100000, 0, DELAYHIST)		#imagem contando historia do jogo
 	
 DELAYHIST:
 	li s7, 32
-	li a0, 8000
+	li a0, 0 #TEMP
 	ecall
 		
 	VIDA_INIC:
@@ -220,11 +220,11 @@ DELAYHIST:
 
 #+++++++++++++++++++++++++MENU PASSWORD++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++		
 PASSWORD:
-	Impressao(password2, 0xFF000000, 0, PASSWORD2) 	#imagem sem asterisco
+	Impressao(password2, 0xFF000000, 0xFF100000, 0, PASSWORD2) 	#imagem sem asterisco
 	PASSWORD2:
-	Impressao(password1, 0xFF000000, 800, BARRA_SELEÇAO) #imagem com asterisco e vai para o teclado
+	Impressao(password1, 0xFF000000, 0xFF100000, 800, BARRA_SELEÇAO) #imagem com asterisco e vai para o teclado
 	BARRA_SELEÇAO:
-	Impressaopequena(Barra_seleçao, 0xFF00A53C, 0, 0x123, TECLADO_PASSWORD)#imprime a barra na seleçao da primeira letra
+	Impressaopequena(Barra_seleçao, 0xFF00A53C, 0xFF10A53C, 0, 0x123, TECLADO_PASSWORD)#imprime a barra na seleçao da primeira letra
 #===========================================VALIDAÇAO SENHA=============
 VALIDADOR_SENHA:
 	lw s5, 0xFF20000C 	#carrega display do KDMMIO, quarta letra
@@ -244,19 +244,19 @@ SEGUNDA_LETRA:
 	lw s2, 0xFF20000C 	#carrega display do KDMMIO, primeira letra
 	apaga_cor(0xFF00A53C, 29 ,145,146, 0x123, IMPRIME_SEGUNDA)#apaga barra primeira letra(cor azul)
 	IMPRIME_SEGUNDA:
-		Impressaopequena(Barra_seleçao, 0xFF00A572, 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da segunda letra
+		Impressaopequena(Barra_seleçao, 0xFF00A572, 0xFF10A572 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da segunda letra
 		
 TERCEIRA_LETRA:			#carrega display do KDMMIO, segunda letra
 	lw s3, 0xFF20000C 
 	apaga_cor(0xFF00A572, 29 ,145,146, 0x123, IMPRIME_TERCEIRA)#apaga barra primeira letra(cor azul)
 	IMPRIME_TERCEIRA:
-		Impressaopequena(Barra_seleçao, 0xFF00A5A7, 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da terceira letra
+		Impressaopequena(Barra_seleçao, 0xFF00A5A7, 0xFF10A5A7 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da terceira letra
 		
 QUARTA_LETRA:
 	lw s4, 0xFF20000C 	##carrega display do KDMMIO, terceira letra
 	apaga_cor(0xFF00A5A7, 29 ,145,146, 0x123, IMPRIME_QUARTA)#apaga barra primeira letra(cor azul)
 	IMPRIME_QUARTA:
-		Impressaopequena(Barra_seleçao, 0xFF00A5DC, 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da quarta letra														
+		Impressaopequena(Barra_seleçao, 0xFF00A5DC, 0xFF10A5DC, 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da quarta letra														
 #=================================TECLADO================================
 #vai se esperar o jogador apertar uma tecla
 TECLADO_PASSWORD:
