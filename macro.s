@@ -16,7 +16,7 @@ lw t1, 0(a5)		#Carrega-o em t1 para manipular
 xori t1, t1, 0x001 	#Inverte o valor atual
 sw t1, 0(a5)		#Armazena de volta em a5 o valor invertido
 .end_macro
-
+ 
 
 ###########################################
 #                                         #
@@ -378,12 +378,7 @@ IMPRIME_F0:
 	add t6, t6, t1			#incrementa o numero de pixels impressos em 16 para o próximo beq ainda pular linha.
 	addi s0, s0, 0x130
 	j IMPRIME_F0
-<<<<<<< Updated upstream
-termf0:
-Trocaframe(50)		# Delay para a animação poder ser vista.		 
-=======
 FIMF0:		 
->>>>>>> Stashed changes
 
 #-------------------------------FRAME 1---------------------------------#	
 	ANDA_F1:
@@ -427,11 +422,7 @@ FIMF1:
 	li s0, 0 		# reseta o s0
 
 INC:	addi s0, s0, 1		# Incrementa o contador
-<<<<<<< Updated upstream
-	Trocaframe(10)		# Alterna entre os frames 0 e 1 com 10ms de delay.
-=======
 	#Trocaframe(40)		# Alterna entre os frames 0 e 1 com 40ms de delay.
->>>>>>> Stashed changes
 	jal RECEBE_TECLA
 	j INC			# Retorna ao contador
 
@@ -461,14 +452,10 @@ Apagachao(8)
 
 ANDA_DIR:
 Anda(lamardir_walk)	#Sprite andando para animação
-<<<<<<< Updated upstream
-Apagachao(8)		#Apaga a sprite para não ocorrer sobreposição
-=======
-Trocaframe(50)		#Delay mínimo para que a animação possa ser vista
+Trocaframe(65)		#Delay mínimo para que a animação possa ser vista
 Apagachao(0)		#Apaga a sprite para não ocorrer sobreposição
->>>>>>> Stashed changes
 Anda(lamardir)		#Sprite parado novamente
-Trocaframe(50)		#Delay mínimo para que a animação possa ser vista
+Trocaframe(65)		#Delay mínimo para que a animação possa ser vista
 j INC	
 	
 
@@ -478,14 +465,10 @@ Apagachao(-8)
 
 ANDA_ESQ:
 Anda(lamaresq_walk)
-<<<<<<< Updated upstream
-Apagachao(-8)
-=======
-Trocaframe(25)
+Trocaframe(65)
 Apagachao(0)
->>>>>>> Stashed changes
 Anda(lamaresq)
-Trocaframe(25)
+Trocaframe(65)
 j INC
 	
 	
@@ -494,14 +477,10 @@ Apagachao(-0xA00)
 			
 ANDA_CIMA:
 Anda(lamarcima_walk)
-<<<<<<< Updated upstream
-Apagachao(-0xA00)
-=======
-Trocaframe(25)
+Trocaframe(65)
 Apagachao(0)
->>>>>>> Stashed changes
 Anda(lamarcima)
-Trocaframe(25)
+Trocaframe(65)
 j INC
 
 
@@ -510,14 +489,10 @@ Apagachao(0xA00)
 
 ANDA_BAIXO:
 Anda(lamarbaixo_walk)
-<<<<<<< Updated upstream
-Apagachao(0xA00)
-=======
-Trocaframe(25)
+Trocaframe(65)
 Apagachao(0)
->>>>>>> Stashed changes
 Anda(lamarbaixo)
-Trocaframe(25)
+Trocaframe(65)
 j INC
 
 RETORNA:ret												
