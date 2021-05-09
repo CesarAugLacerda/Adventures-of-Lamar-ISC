@@ -438,14 +438,129 @@ RECEBE_TECLA:
 	li t6, 100			# ascii de "d" para verificar se foi pressionado
 	li t0, 102			# ascii de "f" para verificar se foi pressionado
 	
-	beq t2, t6, APAGADIR		# anda para a direita
-	beq t2, t5, APAGAESQ		# anda para a esquerda
-	beq t2, t4, APAGACIMA		# anda para cima
-	beq t2, t3, APAGABAIXO		# anda para baixo
+	beq t2, t6, COLISAODIR		# verifica colisao para a direita
+	beq t2, t5, COLISAOESQ		# verifica colisao para esquerda
+	beq t2, t4, COLISAOCIMA		# verifica colisao para cima
+	beq t2, t3, COLISAOBAIXO	# verifica colisao para baixo
 	
 	li t0, 27			# ascii de "esc" para verificar se foi pressionado
 	beq t2, t0, VIDA_DIMINUI 	#seppuku
 			
+			
+COLISAODIR:
+	li t1, 1630 # posicao do pixel a ser analisado a partir da posicao do lolo
+	add a6, s10, t1 # posicao do pixel a ser analisado
+	#li t2, cor_da_caixa
+	#li t3, cor_do_bau
+	#li t4, cor_do_coracao
+	li t0, 10 # cor do chao
+	lb s6 0(a6) # carrega a cor do pixel a ser analisado
+	beq s6, t0, COLISAODIR2 # se o pixel for da mesma cor do chao va pra COLISAODIR2
+	#beq s6, t2, CAIXADIR
+	#beq s6, t3, BAU
+	#beq s6, t4, CORACAO
+	j RECEBE_TECLA # caso contrario, eh um obstaculo
+	
+COLISAODIR2:
+	#mesma coisa do codigo de cima, porem analisa outro pixel
+	li s6, 0
+	li a6, 0
+	li t1, 3550
+	add a6, s10, t1
+	li t0, 10
+	lb s6 0(a6)
+	beq s6, t0, APAGADIR
+	j RECEBE_TECLA
+	
+	
+COLISAOESQ:
+	li t1, 963 # posicao do pixel a ser analisado a partir da posicao do lolo
+	add a6, s10, t1 # posicao do pixel a ser analisado
+	#li t2, cor_da_caixa
+	#li t3, cor_do_bau
+	#li t4, cor_do_coracao
+	li t0, 10 # cor do chao
+	lb s6 0(a6) # carrega a cor do pixel a ser analisado
+	beq s6, t0, COLISAOESQ2 # se o pixel for da mesma cor do chao va pra COLISAOESQ2
+	#beq s6, t2, CAIXAESQ 	
+	#beq s6, t3, BAU
+	#beq s6, t4, CORACAO
+	j RECEBE_TECLA # caso contrario, eh um obstaculo
+
+COLISAOESQ2:
+	#mesma coisa do codigo de cima, porem analisa outro pixel
+	li s6, 0
+	li a6, 0
+	li t1, 2883
+	add a6, s10, t1
+	li t0, 10
+	lb s6 0(a6)
+	beq s6, t0, APAGAESQ
+	j RECEBE_TECLA
+	
+			
+COLISAOCIMA:
+	li t1, -1909  # posicao do pixel a ser analisado a partir da posicao do lolo
+	add a6, s10, t1 # posicao do pixel a ser analisado
+	#li t2, cor_da_caixa
+	#li t3, cor_do_bau
+	#li t4, cor_do_coracao
+	li t0, 10 # cor do chao
+	lb s6 0(a6) # carrega a cor do pixel a ser analisado
+	beq s6, t0, COLISAOCIMA2 # se o pixel for da mesma cor do chao va pra COLISAOESQ2
+	#beq s6, t2, CAIXAESQ 	
+	#beq s6, t3, BAU
+	#beq s6, t4, CORACAO
+	j RECEBE_TECLA # caso contrario, eh um obstaculo
+	
+COLISAOCIMA2:
+	#mesma coisa do codigo de cima, porem analisa outro pixel
+	li s6, 0
+	li a6, 0
+	li t1, -1902
+	add a6, s10, t1
+	li t0, 10
+	lb s6 0(a6)
+	beq s6, t0, APAGACIMA
+	j RECEBE_TECLA
+	
+	
+COLISAOBAIXO:
+	li t1, 5771
+	add a6, s10, t1
+	#li t2, cor_da_caixa
+	#li t3, cor_do_bau
+	#li t4, cor_do_coracao
+	li t0, 10
+	lb s6 0(a6)
+	beq s6, t0, COLISAOBAIXO2
+	#beq s6, t2, CAIXABAIXO
+	#beq s6, t3, BAU
+	#beq s6, t4, CORACAO
+	j RECEBE_TECLA
+	
+COLISAOBAIXO2:
+	#mesma coisa do codigo de cima, porem analisa outro pixel
+	li s6, 0
+	li a6, 0
+	li t1, 5778
+	add a6, s10, t1
+	li t0, 10
+	lb s6 0(a6)
+	beq s6, t0, APAGABAIXO
+	j RECEBE_TECLA	
+
+#CAIXADIR:
+	
+#CAIXAESQ:
+	
+#CAIXACIMA:
+	
+#CAIXABAIXO:
+	
+#BAU:
+	
+#CORACAO:			
 
 APAGADIR:
 Apagachao(8)
