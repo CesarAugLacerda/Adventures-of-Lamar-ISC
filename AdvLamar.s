@@ -184,21 +184,21 @@ SENHA_INCORRETA:
 #senha:(* * * *),(0 1 2 3),(s2, s3, s4, s5)--------> posi?¡ìao logica de cada valor sendo respectivamente, apenas asteriscos, posi?¡ìao em a1 de cada e registradores onde o valor esta armazendado
 SEGUNDA_LETRA:
 	lw s2, 0xFF20000C 	#carrega display do KDMMIO, primeira letra
-	play_sound(72, 1000, 120, 127)
+	play_sound(80, 150, 99, 127)
 	apaga_cor(0xFF10A53C, 29 ,145,146, 0x123, IMPRIME_SEGUNDA)#apaga barra primeira letra(cor azul)
 	IMPRIME_SEGUNDA:
 		Impressaopequena(Barra_selecao, 0xFF00A572, 0xFF10A572 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na sele?¡ìao da segunda letra
 		
 TERCEIRA_LETRA:			#carrega display do KDMMIO, segunda letra
 	lw s3, 0xFF20000C 
-	play_sound(72, 1000, 120, 127)	
+	play_sound(80, 150, 99, 127)	
 	apaga_cor(0xFF10A572, 29 ,145,146, 0x123, IMPRIME_TERCEIRA)#apaga barra primeira letra(cor azul)
 	IMPRIME_TERCEIRA:
 		Impressaopequena(Barra_selecao, 0xFF00A5A7, 0xFF10A5A7 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na sele?¡ìao da terceira letra
 		
 QUARTA_LETRA:
 	lw s4, 0xFF20000C 	##carrega display do KDMMIO, terceira letra
-	play_sound(72, 1000, 120, 127)
+	play_sound(80, 150, 99, 127)
 	apaga_cor(0xFF10A5A7, 29 ,145,146, 0x123, IMPRIME_QUARTA)#apaga barra primeira letra(cor azul)
 	IMPRIME_QUARTA:
 		Impressaopequena(Barra_selecao, 0xFF00A5DC, 0xFF10A5DC, 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na sele?¡ìao da quarta letra														
@@ -249,7 +249,7 @@ LOOP:	lw t0,0(t1)			# Le bit de Controle Teclado
 
    	
 VALIDADOR_SENHA_PRE:
-	play_sound(72, 1000, 120, 127)
+	play_sound(80, 150, 99, 127)
 	ImpressaoF(password2, 0xFF000000, 0, VALIDADOR) 	#imagem sem asterisco
 	VALIDADOR:
 	Frame(0)

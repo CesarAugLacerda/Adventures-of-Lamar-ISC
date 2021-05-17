@@ -305,7 +305,7 @@ IMPRIME_F1:
 	PULA_F1:
 	add t6, t6, t1			#incrementa o numero de pixels impressos pelo n de linhas para o pr¨®ximo beq ainda pular linha.
 	addi s0, s0, %pula
-	j IMPRIME_F1		
+	j IMPRIME_F1
 .end_macro
 
 #---------------------------------------------------------------------#
