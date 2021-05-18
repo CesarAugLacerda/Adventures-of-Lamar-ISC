@@ -23,7 +23,6 @@ CAIXA2_T3:
 	ImpressaopequenaC(caixa, a6, s6, 0, 304, CAIXATEMP2_T)
 	CAIXATEMP2_T:
 		jr s5
-<<<<<<< HEAD
 			
 ATACADIR2_T3:
 ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
@@ -36,12 +35,10 @@ ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
 
 ATACABAIXO2_T3:
 ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
-=======
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 
 INICIO_MENU:
 #====================MENU=================================
-# Prepara os endereços para printar o menu na tela
+# Prepara os endere?os para printar o menu na tela
 	ImpressaoF(menu1, 0xFF000000, 0, MENU_F)
 
 # Prepara os enderecos para printar a segunda parte do menu
@@ -51,7 +48,7 @@ MENU_F:
 
 MUSICA:		# Vazio ate que o menu esteja pronto
 
-# Prepara os enderecos para printar a segunda parte do menu e entra para a seta de seleção do menu
+# Prepara os enderecos para printar a segunda parte do menu e entra para a seta de sele??o do menu
 MENU_TXT: 
 	Impressao(menu3,0xFF000000, 0xFF100000, 0, SETA)
 #========================================================
@@ -75,7 +72,7 @@ RECEBE_TECLA_MENU:
 	andi t0,t0,0x0001		# mascara o bit menos significativo
 	
 	
-   	beq t0,zero,RECEBE_TECLA_MENU   	   	# Se não há tecla pressionada então vai para Retorno(funça {RETORNA: ret} deve estar no final da pagina do arquivo)
+   	beq t0,zero,RECEBE_TECLA_MENU   	   	# Se n?o h¨¢ tecla pressionada ent?o vai para Retorno(fun?a {RETORNA: ret} deve estar no final da pagina do arquivo)
    	lw t2,4(t1)  			# le o valor da tecla
    	
 	li t5, 115			# ascii de "w" para verificar se foi pressionado
@@ -83,7 +80,7 @@ RECEBE_TECLA_MENU:
 	li t0, 102			# ascii de "f" para verificar se foi pressionado
 	beq t2, t6, SETA_CIMA		#SETA vai pra cima	
 	beq t2, t5, SETA_BAIXO		#SETA vai pra baixo
-	beq t2, t0, SELEÇAO_MENU	#Entra no lugar desejado
+	beq t2, t0, SELECAO_MENU	#Entra no lugar desejado
 	
 #=========================================================================		
 SETA_CIMA:
@@ -99,11 +96,11 @@ SETA_BAIXO:
 	IMPRIME_SETA_BAIXO:
 		Impressaopequena(seta, 0xFF00E518, 0xFF10E518, 0, 0x12D, INC_TECLA)
 	
-#==========================SELEÇÃO Start/Password ======================================
+#==========================SELE??O Start/Password ======================================
 #s8 = 0 seta esta em start
 #s8 = 1 seta esta em password
  
-SELEÇAO_MENU:
+SELECAO_MENU:
 	jal s5, MUSICA_RESET
 	li t0, 1 
 	beq s8, zero, START		#s8 = 0. vai para START
@@ -168,7 +165,7 @@ PAUSAFIM:
  Delay(2000)
 
 	VIDA_INIC:
-	li s7, 5				#lamar começa com 5 de vida
+	li s7, 5				#lamar come?a com 5 de vida
 	j MAIN					#em seguida vai pra VIDA conferir e printar a vida atual de lamar
 
 
@@ -192,13 +189,10 @@ MUSICA2_T2:
 MUSICA3_T2:
 	 play_musica_notloop(9, 64, FANFARE)
 	 jr s5
-<<<<<<< HEAD
 
 	  
 RECEBE_TECLA_T:
 j RECEBE_TECLA_T2
-=======
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 #================================================================
 
 #+++++++++++++++++++++++++MENU PASSWORD++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++		
@@ -206,16 +200,16 @@ PASSWORD:
 	ImpressaoF(password2, 0xFF100000, 0, PASSWORD2) 	#imagem sem asterisco
 	PASSWORD2:
 	Frame(1)				#Troca para frame 1
-	ImpressaoF(password1, 0xFF100000, 800, BARRA_SELEÇAO) #imagem com asterisco e vai para o teclado
-	BARRA_SELEÇAO:
-	Impressaopequena(Barra_selecao, 0xFF00A53C, 0xFF10A53C, 0, 0x123, TECLADO_PASSWORD)#imprime a barra na seleÃ§ao da primeira letra
+	ImpressaoF(password1, 0xFF100000, 800, BARRA_SELECAO) #imagem com asterisco e vai para o teclado
+	BARRA_SELECAO:
+	Impressaopequena(Barra_selecao, 0xFF00A53C, 0xFF10A53C, 0, 0x123, TECLADO_PASSWORD)#imprime a barra na sele?¡ìao da primeira letra
 
-#===========================================VALIDAÇAO SENHA=============
+#===========================================VALIDA?AO SENHA=============
 VALIDADOR_SENHA:
 	lw s5, 0xFF20000C 	#carrega display do KDMMIO, quarta letra
 	#----------------------------------------------------------------#
 	
-	li s7, 5				#lamar começa com 5 de vida(s7) usando uma password
+	li s7, 5				#lamar come?a com 5 de vida(s7) usando uma password
 	
 	#Primeira fase(senha: abba)
 PRIMEIRA_FASE_SENHA:	
@@ -238,32 +232,27 @@ SENHA_INCORRETA:
 	
 #=================================SENHAS===============================
 #apaga barra da letra anterior e imprime na proxima
-#senha:(* * * *),(0 1 2 3),(s2, s3, s4, s5)--------> posiçao logica de cada valor sendo respectivamente, apenas asteriscos, posiçao em a1 de cada e registradores onde o valor esta armazendado
+#senha:(* * * *),(0 1 2 3),(s2, s3, s4, s5)--------> posi?ao logica de cada valor sendo respectivamente, apenas asteriscos, posi?ao em a1 de cada e registradores onde o valor esta armazendado
 SEGUNDA_LETRA:
 	lw s2, 0xFF20000C 	#carrega display do KDMMIO, primeira letra
-	play_sound(72, 1000, 120, 127)
+	play_sound(80, 150, 99, 127)
 	apaga_cor(0xFF10A53C, 29 ,145,146, 0x123, IMPRIME_SEGUNDA)#apaga barra primeira letra(cor azul)
 	IMPRIME_SEGUNDA:
-		Impressaopequena(Barra_selecao, 0xFF00A572, 0xFF10A572 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da segunda letra
+		Impressaopequena(Barra_selecao, 0xFF00A572, 0xFF10A572 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na sele?ao da segunda letra
 		
 TERCEIRA_LETRA:			#carrega display do KDMMIO, segunda letra
 	lw s3, 0xFF20000C 
-	play_sound(72, 1000, 120, 127)	
+	play_sound(80, 150, 99, 127)	
 	apaga_cor(0xFF10A572, 29 ,145,146, 0x123, IMPRIME_TERCEIRA)#apaga barra primeira letra(cor azul)
 	IMPRIME_TERCEIRA:
-		Impressaopequena(Barra_selecao, 0xFF00A5A7, 0xFF10A5A7 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da terceira letra
+		Impressaopequena(Barra_selecao, 0xFF00A5A7, 0xFF10A5A7 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na sele?ao da terceira letra
 		
 QUARTA_LETRA:
-<<<<<<< HEAD
 	lw s4, 0xFF20000C 	##carrega display do KDMMIO, terceira letra	
 	play_sound(80, 150, 99, 127)
-=======
-	lw s4, 0xFF20000C 	##carrega display do KDMMIO, terceira letra
-	play_sound(72, 1000, 120, 127)
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 	apaga_cor(0xFF10A5A7, 29 ,145,146, 0x123, IMPRIME_QUARTA)#apaga barra primeira letra(cor azul)
 	IMPRIME_QUARTA:
-		Impressaopequena(Barra_selecao, 0xFF00A5DC, 0xFF10A5DC, 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na seleçao da quarta letra														
+		Impressaopequena(Barra_selecao, 0xFF00A5DC, 0xFF10A5DC, 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na sele?ao da quarta letra														
 #=================================TECLADO================================
 MENU_TROCAFRAME:
 	ImpressaoF(menu3,0xFF000000, 0, PROXIMO)
@@ -285,33 +274,33 @@ RECEBE_TECLA_PASSWORD:
 	li t1,0xFF200000		# carrega o KDMMIO
 LOOP:	lw t0,0(t1)			# Le bit de Controle Teclado
 	andi t0,t0,0x0001		# mascara o bit menos significativo
-   	beq t0,zero,RETORNA2  	   	# Se não há tecla pressionada entao faz o LOOP
+   	beq t0,zero,RETORNA2  	   	# Se n?o h¨¢ tecla pressionada entao faz o LOOP
    	lw t2,4(t1)  			# le o valor da tecla
    	sw t2, 12(t1)			#escreve a tecla no display
    	#AVISO
    	#por algum motivo sempre que for reiniciar o BITMAP DISPLAY,caso queira que as teclas sejam digitadas no
-   	#display do KDMMIO é necessario desconectar e conectar ele
+   	#display do KDMMIO ¨¦ necessario desconectar e conectar ele
    	
    	li t0, 27			# ascii de "esc" para verificar se foi pressionado
 	beq t2, t0, MENU_TROCAFRAME 		#sai do password de volta para o menu
    	
-   	addi s8,s8, 1 			#move posiçao tecla
+   	addi s8,s8, 1 			#move posi?ao tecla
    	
    	li t0, 1
-   	beq t0, s8, SEGUNDA_LETRA	#se a1 determinar que esta na segunda posiçao(1) vai para segunda letra 
+   	beq t0, s8, SEGUNDA_LETRA	#se a1 determinar que esta na segunda posi?ao(1) vai para segunda letra 
    	
    	li t0, 2
-   	beq t0, s8, TERCEIRA_LETRA	#se a1 determinar que esta na terceira posiçao(2) vai para segunda letra
+   	beq t0, s8, TERCEIRA_LETRA	#se a1 determinar que esta na terceira posi?ao(2) vai para segunda letra
    	
    	li t0, 3
-   	beq t0, s8, QUARTA_LETRA	#se a1 determinar que esta na quarta posiçao(3) vai para segunda letra
+   	beq t0, s8, QUARTA_LETRA	#se a1 determinar que esta na quarta posi?ao(3) vai para segunda letra
    	
    	li t0, 4
-   	beq t0,s8, VALIDADOR_SENHA_PRE       #quando ultima senha for digitada ele faz a validaçao da senha	
+   	beq t0,s8, VALIDADOR_SENHA_PRE       #quando ultima senha for digitada ele faz a valida?ao da senha	
 
    	
 VALIDADOR_SENHA_PRE:
-	play_sound(72, 1000, 120, 127)
+	play_sound(80, 150, 99, 127)
 	ImpressaoF(password2, 0xFF000000, 0, VALIDADOR) 	#imagem sem asterisco
 	VALIDADOR:
 	Frame(0)
@@ -357,11 +346,7 @@ KH: 81,682,81,227,76,682,76,227,74,682,74,227,83,682,83,227,81,682,81,227,76,682
 #===============Trampolin===========
 PASSWORD_T:
 	reset()
-<<<<<<< HEAD
 	la t0,VIDAS_LAMAR	# endere?¡ìo da VIDAS_LAMAR
-=======
-	la t0,VIDAS_LAMAR	# endereÃ§o da VIDAS_LAMAR
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 	li t1, 5		#determina como 5 a vida do lamar
 	sw t1,0(t0)		# salva a vida do lamar
  	j PASSWORD
@@ -371,7 +356,6 @@ CAIXA2_T:		j CAIXA2_T2
 MUSICA1_T:	j MUSICA1_T2 	 	
 MUSICA2_T:	j MUSICA2_T2 					
 MUSICA3_T:	j MUSICA3_T2
-<<<<<<< HEAD
 
 ATACADIR2_T2:
 j ATACADIR2_T3
@@ -387,15 +371,11 @@ j ATACABAIXO2_T3
  	
  RECEBE_TECLA_T2:
 j RECEBE_TECLA
-=======
- 	
- 	
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 #=================================
 MENU:
 Frame(1) #sempre vai estar no frame 0
 
-la t0,VIDAS_LAMAR	# endereÃ§o da VIDAS_LAMAR
+la t0,VIDAS_LAMAR	# endere?¡ìo da VIDAS_LAMAR
 li t1, 5		#determina como 5 a vida do lamar
 sw t1,0(t0)		# salva a vida do lamar
 
@@ -404,7 +384,7 @@ j INICIO_MENU
 #=================================VIDAS=============================
 VIDA:
 
-la t0,VIDAS_LAMAR	# endereÃ§o da VIDAS_LAMAR
+la t0,VIDAS_LAMAR	# endere?¡ìo da VIDAS_LAMAR
 lw t1,0(t0)		# t1 = vida atual lamar
 
 
@@ -442,11 +422,11 @@ vida_lamar(0, VERIFICADOR_DE_FASE)
 
 VIDA_DIMINUI:
 jal s5, MUSICA_RESET	#reseta os conatdores da musica, ela toca desde o inicio
-la t0,VIDAS_LAMAR	# endereÃ§o da VIDAS_LAMAR
+la t0,VIDAS_LAMAR	# endere?¡ìo da VIDAS_LAMAR
 lw t1,0(t0)		# t1 = vida atual lamar
 li t0, 1
 sub t1, t1, t0		#sempre que lamar morrer diminui -1 de vida
-la t0,VIDAS_LAMAR	# endereÃ§o do VIDAS_LAMAR
+la t0,VIDAS_LAMAR	# endere?¡ìo do VIDAS_LAMAR
 sw t1,0(t0)		# salva a vida do lamar diminuida
 blt t1, zero, MENU	#se lamar chegar a zero vida, volta para o menu
 
@@ -465,9 +445,9 @@ li t0, 1
 beq s2, t0, IMPRIME_PERSONAGEM1	 #vai para a primeira fase
 li t0, 2
 beq s2, t0, IMPRIME_PERSONAGEM2 #vai para a segunda fase
-#=================================CORAÃ‡AO/PODER=============================
+#=================================CORA??AO/PODER=============================
 CORACAO:
-la t0,POWER_LAMAR	# endereÃ§o da POWER_LAMAR
+la t0,POWER_LAMAR	# endere?¡ìo da POWER_LAMAR
 lw t1,0(t0)
 
 beq, t1, zero, POWER0
@@ -484,11 +464,11 @@ POWER2:poder_lamar(2, VERIFICADOR_POWER)
 POWER3:poder_lamar(3, VERIFICADOR_POWER)
 
 CORACAO_AUMENTA:
-la t0,POWER_LAMAR	# endereÃ§o da POWER_LAMAR
+la t0,POWER_LAMAR	# endere?¡ìo da POWER_LAMAR
 lw t1,0(t0)		# t1 = power atual lamar
 
-addi t1, t1, 1		#sempre que lamar pegar coraÃ§ao,aumenta em 1 seu power
-la t0,POWER_LAMAR	# endereÃ§o do VIDAS_LAMAR
+addi t1, t1, 1		#sempre que lamar pegar cora?¡ìao,aumenta em 1 seu power
+la t0,POWER_LAMAR	# endere?¡ìo do VIDAS_LAMAR
 sw t1,0(t0)		# salva a vida do lamar diminuida
 j   CORACAO
 
@@ -551,7 +531,7 @@ MUSICA_RESET:
 #FASE1
 MAIN:
 IMPRIME_FASE1:	
-	ImpressaoF(Transicao1, 0xFF100000, 0, TROCA_FRAMEI)	#tela de transiÃƒÆ’Ã‚Â§ao com informaÃƒÆ’Ã‚Â§oes da fase e senha
+	ImpressaoF(Transicao1, 0xFF100000, 0, TROCA_FRAMEI)	#tela de transi???????¡ìao com informa???????¡ìoes da fase e senha
 	TROCA_FRAMEI:
 		Frame(1)
 		Delay(5000)
@@ -566,14 +546,14 @@ IMPRIME_FASE1:
 IMPRIME_PERSONAGEM1:
 
 #==========Equivalendo valores de power=======
-la t0, ABRIR_BAU	# endereÃƒÂ§o do POWER_LAMAR
+la t0, ABRIR_BAU	# endere???¡ìo do POWER_LAMAR
 
 li t1, 2		# <----------------------------------------------------------------------------DETERMINAR QUANTIDADE DE POWERS DA FASE
 	
 sw t1, 0(t0)		# salva o power do lamar minimo para abrir bau
 
-la t0,POWER_LAMAR	# endereÃƒÂ§o do POWER_LAMAR
-li t1, 0		#lamar comeÃ§a com 0 de power sempre
+la t0,POWER_LAMAR	# endere???¡ìo do POWER_LAMAR
+li t1, 0		#lamar come?¡ìa com 0 de power sempre
 sw t1,0(t0)		# salva o power do lamar 	
 
 #=============================================
@@ -581,12 +561,9 @@ jal s5, CORACAO
 Imprimepersonagem(0xFF008C20, 0xFF108C20, NEXT1)
 
 NEXT1:
-<<<<<<< HEAD
 la t0, DIRECAO_LAMAR
 li t1, 1
 sw t1, 0(t0)
-=======
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 
 jal s5, MUSICA_RESET	#reseta os conatdores da musica, ela toca desde o inicio
 Impressaopequena(caixa,0xFF00DCA0,0xFF10DCA0, 0, 0x130, ANDARLAMAR)
@@ -601,11 +578,7 @@ Impressaopequena(portaaberta,0xFF0014A0,0xFF1014A0, 0, 0x130, RETORNA_JR)
 IMPRIME_FASE2:	
 	jal s5, MUSICA_RESET		
 	jal s5, MUSICA3
-<<<<<<< HEAD
 	ImpressaoF(Transicao2, 0xFF100000, 0, TROCA_FRAMEII)	#tela de transi???????¡ìao com informa???????¡ìoes da fase e senha
-=======
-	ImpressaoF(Transicao2, 0xFF100000, 0, TROCA_FRAMEII)	#tela de transiÃƒÆ’Ã‚Â§ao com informaÃƒÆ’Ã‚Â§oes da fase e senha
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 	TROCA_FRAMEII:
 		Frame(1)
 		Delay(5000)
@@ -618,14 +591,14 @@ IMPRIME_FASE2:
 		
 IMPRIME_PERSONAGEM2:
 #==========Equivalendo valores de power=======
-la t0, ABRIR_BAU	# endereÃƒÂ§o do POWER_LAMAR
+la t0, ABRIR_BAU	# endere???¡ìo do POWER_LAMAR
 
 li t1, 3		# <----------------------------------------------------------------------------DETERMINAR QUANTIDADE DE POWERS DA FASE
 	
 sw t1, 0(t0)		# salva o power do lamar minimo para abrir bau
 
-la t0,POWER_LAMAR	# endereÃƒÂ§o do POWER_LAMAR
-li t1, 0		#lamar comeÃ§a com 0 de power sempre
+la t0,POWER_LAMAR	# endere???¡ìo do POWER_LAMAR
+li t1, 0		#lamar come?¡ìa com 0 de power sempre
 sw t1,0(t0)		# salva o power do lamar 	
 
 #=============================================
@@ -668,7 +641,7 @@ RECEBE_TECLA:
 	li t1,0xFF200000		# carrega o KDMMIO
 	lw t0,0(t1)			# Le bit de Controle Teclado
 	andi t0,t0,0x0001		# mascara o bit menos significativo
-   	beq t0,zero, RECEBE_TECLA  	   	# Se n????o h???? tecla pressionada ent????o vai para Retorno(fun???¡ìa {RETORNA: ret} deve estar no final da pagina do arquivo)
+   	beq t0,zero, RECEBE_TECLA  	   	# Se n????o h???? tecla pressionada ent????o vai para Retorno(fun????¨¬a {RETORNA: ret} deve estar no final da pagina do arquivo)
    	lw t2,4(t1)  			# le o valor da tecla
    	li t3, 115			# ascii de "s"
    	li t4, 119			# ascii de "w" para verificar se foi pressionado
@@ -817,10 +790,7 @@ BAUDIR:
 			li t2, 0x100000
 			add s6, a6, t2
 			ImpressaopequenaC(bauvazio, a6, s6, 0, 304, RECEBE_TECLA)
-<<<<<<< HEAD
 
-=======
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 
 COLISAOESQ:
 	li t1, 963 # posicao do pixel a ser analisado a partir da posicao do lolo
@@ -1241,7 +1211,6 @@ BAUBAIXO:
 		li t2, 0x100000
 		add s6, a6, t2
 		ImpressaopequenaC(bauvazio, a6, s6, 0, 304, RECEBE_TECLA)
-<<<<<<< HEAD
 		
 ##############################################################################################################################
 VERIFICADIRECAO:
@@ -1336,8 +1305,6 @@ ImpressaopequenaC(ataquelamar, s6, s8, 100, 0x130, ATACABAIXO2)
 ATACABAIXO2:
 j ATACABAIXO2_T
 
-=======
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 
 
 APAGADIR:
@@ -1345,19 +1312,13 @@ APAGADIR:
 Apagachao(8)
 
 ANDA_DIR:
-<<<<<<< HEAD
 li t1, 1
 sh t1, DIRECAO_LAMAR, t0
 Anda(lamardir_walk)	#Sprite andando para anima??¨¬??o
 Trocaframe(65)		#Delay m??nimo para que a anima??¨¬??o possa ser vista
 Apagachao(0)		#Apaga a sprite para n??o ocorrer sobreposi??¨¬??o
-=======
-Anda(lamardir_walk)	#Sprite andando para anima?¡ì??o
-Trocaframe(65)		#Delay m??nimo para que a anima?¡ì??o possa ser vista
-Apagachao(0)		#Apaga a sprite para n??o ocorrer sobreposi?¡ì??o
->>>>>>> ed794c5adbe932baef66d077389640efe51f79fd
 Anda(lamardir)		#Sprite parado novamente
-Trocaframe(65)		#Delay m??nimo para que a anima?¡ì??o possa ser vista
+Trocaframe(65)		#Delay m??nimo para que a anima??¨¬??o possa ser vista
 j INC	
 
 
@@ -1412,7 +1373,7 @@ RETORNA:ret
 #MAPAS
 .include "./Imagens/MAPA1.data"
 .include "./Imagens/MAPA2.data"
-#Transiçao
+#Transi?ao
 .include "./Imagens/Transicao1.data"
 .include "./Imagens/Transicao2.data"
 .include "./Imagens/Transicao3.data"
@@ -1478,6 +1439,3 @@ RETORNA:ret
 .text	
 																									
 .include "SYSTEMv21.s"
-
-
-
