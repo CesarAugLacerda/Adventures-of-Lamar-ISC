@@ -25,16 +25,24 @@ CAIXA2_T3:
 		jr s5
 			
 ATACADIR2_T3:
-ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
-		
+ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, ATACADIR2_T3_PULA)
+ATACADIR2_T3_PULA:jal s5,CORACAO_DIMINUI
+j RECEBE_TECLA_T
+				
 ATACACIMA2_T3:
-ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
+ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, ATACACIMA2_T3_PULA)
+ATACACIMA2_T3_PULA:jal s5,CORACAO_DIMINUI
+j RECEBE_TECLA_T
 
 ATACAESQ2_T3:
-ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
+ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, ATACAESQ2_T3_PULA)
+ATACAESQ2_T3_PULA:jal s5,CORACAO_DIMINUI
+j RECEBE_TECLA_T
 
 ATACABAIXO2_T3:
-ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
+ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, ATACABAIXO2_T3_PULA)
+ATACABAIXO2_T3_PULA:jal s5,CORACAO_DIMINUI
+j RECEBE_TECLA_T
 
 INICIO_MENU:
 #====================MENU=================================
@@ -177,19 +185,18 @@ CAIXA2_T2:
 	j CAIXA2_T3
 		
 MUSICA1_T2:
-	play_musica(68, 0, KH)
+	play_musica(49, 112, LAMAR_THEME)
 	jr s5
 
 
 MUSICA2_T2:
-	play_musica(97, 54, ZELDA)
+	play_musica(49, 112, LAMAR_THEME)
 	jr s5
 
 
 MUSICA3_T2:
 	 play_musica_notloop(9, 64, FANFARE)
 	 jr s5
-
 	  
 RECEBE_TECLA_T:
 j RECEBE_TECLA_T2
@@ -319,6 +326,7 @@ DIRECAO_LAMAR:  .half 0		# Indica a direcao em que o personagem esta olhando. 1 
 VIDAS_LAMAR:	.word 5		# quando a ultima nota foi tocada
 POWER_LAMAR:	.word 0		# duracao da ultima nota
 ABRIR_BAU:      .word 0		#valor determinado para lamar abrir o bau com os powers
+PONTOS:		.word 0 	#pontuacao por fases, quantidade de pontos para abrir o bau
 
 #=============================================SOUNDTRACK==============================================================================
 #Jenova(tamanho:76)
@@ -327,8 +335,13 @@ JENOVA: 36,357,36,357,36,357,40,1071,36,357,36,357,36,357,41,1071,36,357,36,357,
 #Costa del sol(tamanho: 17)
 FF17_COSTA_DEL_SOL:60,1282,67,513,65,256,67,2052,60,1282,71,513,68,256,67,2052,60,1282,67,513,68,256,69,2052,60,1282,72,513,71,256,69,2052,60,2052
 
+#musica do jogo(tamanho: 49)
+LAMAR_THEME: 67,450,71,450,72,450,74,450,67,450,71,450,72,450,74,450,67,450,71,450,74,450,77,450,76,450,74,450,72,350,74,350,72,350,71,450,67,450,67,450,72,350,74,350,72,350,71,450,67,450,67,450,62,450,65,550,66,550,67,450,67,450,71,450,72,450,74,450,76,450,77,450,76,450,74,450,77,350,76,350,77,350,79,350,77,350,77,350,82,350,79,450,74,550,77,550,78,550
+
+
 #Tela de vitoria FFVII(tamanho: 9) 
 FANFARE: 72,140,72,140,72,140,72,420,68,420,73,420,72,280,73,140,72,1262
+
 #Zelda(tamanho:97)
 ZELDA: 60,652,55,978,60,326,60,163,62,163,64,163,65,163,67,1630,67,326,67,163,69,163,71,326,72,1630,72,326,72,163,71,163,69,326,71,489,69,163,67,1304,67,652,65,326,65,163,67,163,69,1304,67,326,65,326,64,326,64,163,65,163,67,1304,65,326,64,326,62,326,62,163,64,163,66,1304,70,652,67,326,55,163,55,163,55,326,55,163,55,163,55,326,55,163,55,163,55,326,55,326,60,652,55,978,60,326,60,163,62,163,64,163,65,163,67,1630,67,326,67,163,69,163,71,326,72,1956,76,652,74,652,73,1304,67,652,69,1956,72,652,73,652,67,1304,67,652,69,1956,72,652,73,652,67,1304,64,652,65,1956,69,652,67,652,64,1304,60,652,62,326,62,163,64,163,66,1304,70,652,67,326,55,163,55,163,55,326,55,163,55,163,55,326,55,163,55,163,55,326,55,326
 
@@ -470,13 +483,29 @@ lw t1,0(t0)		# t1 = power atual lamar
 addi t1, t1, 1		#sempre que lamar pegar cora?°Ïao,aumenta em 1 seu power
 la t0,POWER_LAMAR	# endere?°Ïo do VIDAS_LAMAR
 sw t1,0(t0)		# salva a vida do lamar diminuida
+
+la t0,PONTOS		# endere?°Ïo da POWER_LAMAR
+lw t1,0(t0)		# t1 = power atual lamar
+
+addi t1, t1, 1		#sempre que lamar pegar cora?°Ïao,aumenta em 1 seu power
+la t0, PONTOS		#endereco do PONTOS
+sw t1,0(t0)		#salva o PONTOS do lamar aumentada
+j   CORACAO
+
+CORACAO_DIMINUI:
+la t0,POWER_LAMAR	# endere√ßo da POWER_LAMAR
+lw t1,0(t0)		# t1 = power atual lamar
+
+addi t1, t1, -1		#sempre que lamar pegar cora√ßao,aumenta em 1 seu power
+la t0,POWER_LAMAR	# endere√ßo do VIDAS_LAMAR
+sw t1,0(t0)		# salva a vida do lamar diminuida
 j   CORACAO
 
 #verifica se lamar pegou todos os powers para abrir a caixa
 VERIFICADOR_POWER:
-	la t0, POWER_LAMAR
+	la t0, PONTOS
 	lw t1, 0(t0)
-	
+
 	la t0, ABRIR_BAU
 	lw t2, 0(t0)
 	
@@ -556,6 +585,9 @@ la t0,POWER_LAMAR	# endere???°Ïo do POWER_LAMAR
 li t1, 0		#lamar come?°Ïa com 0 de power sempre
 sw t1,0(t0)		# salva o power do lamar 	
 
+la t0,PONTOS	# endere???°Ïo do POWER_LAMAR
+li t1, 0		#lamar come?°Ïa com 0 de power sempre
+sw t1,0(t0)		# salva o power do lamar 
 #=============================================
 jal s5, CORACAO	
 Imprimepersonagem(0xFF008C20, 0xFF108C20, NEXT1)
@@ -601,6 +633,9 @@ la t0,POWER_LAMAR	# endere???°Ïo do POWER_LAMAR
 li t1, 0		#lamar come?°Ïa com 0 de power sempre
 sw t1,0(t0)		# salva o power do lamar 	
 
+la t0,PONTOS	# endere???°Ïo do POWER_LAMAR
+li t1, 0		#lamar come?°Ïa com 0 de power sempre
+sw t1,0(t0)		# salva o power do lamar 	
 #=============================================
 jal s5, CORACAO	
 Imprimepersonagem(0xFF008C20, 0xFF108C20, NEXT2)
@@ -1229,22 +1264,54 @@ beq t0, t4, COLISAOBAIXO	#Se o lamar estiver virado pra baixo
 VERIFICA_ACAO_DIR:
 li t0, 1
 beq s1, zero, APAGADIR		#Se o lamar nao estiver atacando, ele esta andando, pula pra rotina de andar
+
+la t1,POWER_LAMAR
+lw t1,0(t1)
+beqz t1,ATUALIZADIR		#se power for zero, lamar nao ataca
+
 beq s1, t0, ATACADIR		#Se o lamar estiver atacando, rotina de ataque
+	ATUALIZADIR:
+	li s1, 0
+	j RECEBE_TECLA
 
 VERIFICA_ACAO_CIMA:
 li t0, 1
 beq s1, zero, APAGACIMA		#Se o lamar nao estiver atacando, ele esta andando, pula pra rotina de andar
-beq s1, t0, ATACACIMA		#Se o lamar estiver atacando, rotina de ataque
+
+la t1,POWER_LAMAR
+lw t1,0(t1)
+beqz t1,ATUALIZACIMA		#se power for zero, lamar nao ataca
+
+beq s1, t0, ATACACIMA			#Se o lamar estiver atacando, rotina de ataque
+	ATUALIZACIMA:
+	li s1, 0
+	j RECEBE_TECLA
 
 VERIFICA_ACAO_ESQ:
 li t0, 1
 beq s1, zero, APAGAESQ		#Se o lamar nao estiver atacando, ele esta andando, pula pra rotina de andar
-beq s1, t0, ATACAESQ		#Se o lamar estiver atacando, rotina de ataque
+
+la t1,POWER_LAMAR
+lw t1,0(t1)
+beqz t1,ATUALIZAESQ		#se power for zero, lamar nao ataca
+
+beq s1, t0, ATACAESQ			#Se o lamar estiver atacando, rotina de ataque
+	ATUALIZAESQ:
+	li s1, 0
+	j RECEBE_TECLA
 
 VERIFICA_ACAO_BAIXO:
 li t0, 1
 beq s1, zero, APAGABAIXO	#Se o lamar nao estiver atacando, ele esta andando, pula pra rotina de andar
-beq s1, t0, ATACABAIXO		#Se o lamar estiver atacando, rotina de ataque
+
+la t1,POWER_LAMAR
+lw t1,0(t1)
+beqz t1, ATUALIZABAIXO		#se power for zero, lamar nao ataca
+
+beq s1, t0, ATACABAIXO			#Se o lamar estiver atacando, rotina de ataque
+	ATUALIZABAIXO:
+	li s1, 0
+	j RECEBE_TECLA
 
 #-----------------------------------------------------------#
 ATACADIR:
@@ -1255,6 +1322,7 @@ li t3, 24			# Quantos pixels a frente do lamar ele imprime o ataque
 add s6, t1, t3
 add s8, t2, t3
 li s1, 0
+
 ImpressaopequenaC(ataquelamardir, s6, s8, 0, 0x130, ATACADIR2)
 
 ATACADIR2:
