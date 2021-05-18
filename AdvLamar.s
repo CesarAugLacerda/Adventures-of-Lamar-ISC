@@ -6,12 +6,35 @@
 
 
 .include "macro.s"
-.include "midi.s"
 .include "MACROSv21.s"	
-			
+		
 .text
 
 j MENU
+
+
+#Trampolim pra caixa:
+CAIXA_T3:
+	ImpressaopequenaC(meiochao, a6, s6, 0, 304, CAIXATEMP_T)
+	CAIXATEMP_T:
+		jr s5
+
+CAIXA2_T3:
+	ImpressaopequenaC(caixa, a6, s6, 0, 304, CAIXATEMP2_T)
+	CAIXATEMP2_T:
+		jr s5
+			
+ATACADIR2_T3:
+ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
+		
+ATACACIMA2_T3:
+ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
+
+ATACAESQ2_T3:
+ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
+
+ATACABAIXO2_T3:
+ImpressaopequenaC(meiochao,s6 , s8, 250, 0x130, RECEBE_TECLA_T)
 
 INICIO_MENU:
 #====================MENU=================================
@@ -84,6 +107,7 @@ SELECAO_MENU:
 	beq s8, t0, PASSWORD		#s8 = 1. vai para PASSWORD
 #+++++++++++++++++++++++++++MENU START++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 START:
+.include "midi.s"	
 
     ImpressaoF(basehistoria, 0xFF000000, 0, HISTORIA)        #imagem contando historia do jogo
 HISTORIA:
@@ -144,6 +168,33 @@ PAUSAFIM:
 	li s7, 5				#lamar come?a com 5 de vida
 	j MAIN					#em seguida vai pra VIDA conferir e printar a vida atual de lamar
 
+
+#==================================TRAMPOLIN2==================
+CAIXA_T2:
+	j CAIXA_T3
+
+CAIXA2_T2:
+	j CAIXA2_T3
+		
+MUSICA1_T2:
+	play_musica(68, 0, KH)
+	jr s5
+
+
+MUSICA2_T2:
+	play_musica(97, 54, ZELDA)
+	jr s5
+
+
+MUSICA3_T2:
+	 play_musica_notloop(9, 64, FANFARE)
+	 jr s5
+
+	  
+RECEBE_TECLA_T:
+j RECEBE_TECLA_T2
+#================================================================
+
 #+++++++++++++++++++++++++MENU PASSWORD++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++		
 PASSWORD:
 	ImpressaoF(password2, 0xFF100000, 0, PASSWORD2) 	#imagem sem asterisco
@@ -197,7 +248,7 @@ TERCEIRA_LETRA:			#carrega display do KDMMIO, segunda letra
 		Impressaopequena(Barra_selecao, 0xFF00A5A7, 0xFF10A5A7 0, 0x123, RECEBE_TECLA_PASSWORD)#imprime a barra na sele?ao da terceira letra
 		
 QUARTA_LETRA:
-	lw s4, 0xFF20000C 	##carrega display do KDMMIO, terceira letra
+	lw s4, 0xFF20000C 	##carrega display do KDMMIO, terceira letra	
 	play_sound(80, 150, 99, 127)
 	apaga_cor(0xFF10A5A7, 29 ,145,146, 0x123, IMPRIME_QUARTA)#apaga barra primeira letra(cor azul)
 	IMPRIME_QUARTA:
@@ -264,6 +315,7 @@ RETORNA2: ret
 .data
 
 POSICAO_LAMAR:  .word 0, 0	# o primeiro valor corresponde ao frame 0, o segundo ao frame 1. uso: 0(t0), 4(s0)
+DIRECAO_LAMAR:  .half 0		# Indica a direcao em que o personagem esta olhando. 1 = direita; 2 = cima; 3 = esquerda; 4 = baixo
 VIDAS_LAMAR:	.word 5		# quando a ultima nota foi tocada
 POWER_LAMAR:	.word 0		# duracao da ultima nota
 ABRIR_BAU:      .word 0		#valor determinado para lamar abrir o bau com os powers
@@ -275,9 +327,8 @@ JENOVA: 36,357,36,357,36,357,40,1071,36,357,36,357,36,357,41,1071,36,357,36,357,
 #Costa del sol(tamanho: 17)
 FF17_COSTA_DEL_SOL:60,1282,67,513,65,256,67,2052,60,1282,71,513,68,256,67,2052,60,1282,67,513,68,256,69,2052,60,1282,72,513,71,256,69,2052,60,2052
 
-#amongus(tamanho: 31) 
-AMONGUS: 36,638,72,319,76,319,77,319,78,319,77,319,76,319,72,638,60,319,71,159,74,159,72,638,60,319,31,319,36,638,72,319,76,319,77,319,78,319,77,319,76,319,78,638,60,638,78,212,77,212,76,212,78,212,77,0,77,212,76,0,76,212
-
+#Tela de vitoria FFVII(tamanho: 9) 
+FANFARE: 72,140,72,140,72,140,72,420,68,420,73,420,72,280,73,140,72,1262
 #Zelda(tamanho:97)
 ZELDA: 60,652,55,978,60,326,60,163,62,163,64,163,65,163,67,1630,67,326,67,163,69,163,71,326,72,1630,72,326,72,163,71,163,69,326,71,489,69,163,67,1304,67,652,65,326,65,163,67,163,69,1304,67,326,65,326,64,326,64,163,65,163,67,1304,65,326,64,326,62,326,62,163,64,163,66,1304,70,652,67,326,55,163,55,163,55,326,55,163,55,163,55,326,55,163,55,163,55,326,55,326,60,652,55,978,60,326,60,163,62,163,64,163,65,163,67,1630,67,326,67,163,69,163,71,326,72,1956,76,652,74,652,73,1304,67,652,69,1956,72,652,73,652,67,1304,67,652,69,1956,72,652,73,652,67,1304,64,652,65,1956,69,652,67,652,64,1304,60,652,62,326,62,163,64,163,66,1304,70,652,67,326,55,163,55,163,55,326,55,163,55,163,55,326,55,163,55,163,55,326,55,326
 
@@ -291,12 +342,35 @@ KH: 81,682,81,227,76,682,76,227,74,682,74,227,83,682,83,227,81,682,81,227,76,682
 
 
 .text
+
 #===============Trampolin===========
 PASSWORD_T:
+	reset()
 	la t0,VIDAS_LAMAR	# endere?¡ìo da VIDAS_LAMAR
 	li t1, 5		#determina como 5 a vida do lamar
 	sw t1,0(t0)		# salva a vida do lamar
  	j PASSWORD
+ 
+CAIXA_T:		j CAIXA_T2
+CAIXA2_T:		j CAIXA2_T2
+MUSICA1_T:	j MUSICA1_T2 	 	
+MUSICA2_T:	j MUSICA2_T2 					
+MUSICA3_T:	j MUSICA3_T2
+
+ATACADIR2_T2:
+j ATACADIR2_T3
+
+ATACACIMA2_T2:
+j ATACACIMA2_T3
+
+ATACAESQ2_T2:
+j ATACAESQ2_T3
+
+ATACABAIXO2_T2:
+j ATACABAIXO2_T3
+ 	
+ RECEBE_TECLA_T2:
+j RECEBE_TECLA
 #=================================
 MENU:
 Frame(1) #sempre vai estar no frame 0
@@ -430,17 +504,14 @@ BAU_PORTA:
 	li t0, 2
 	beq s2, t0, IMPRIME_PORTA2      #abre porta da primeira fase	
 	
-	
+	#Musica vitoria FFVII(tamanho:9)
+#FANFARE: 72,140,72,140,72,140,72,420,68,420,73,420,72,280,73,140,72,1262
 #===============================MUSICAS=====================================
-MUSICA1:
-	play_musica(68, 0, KH)
-	jr s5
+MUSICA1:	j MUSICA1_T
+MUSICA2:	j MUSICA2_T
+MUSICA3:	j MUSICA3_T
 
-MUSICA2:
-	play_musica(97, 54, ZELDA)
-	jr s5
-
-	
+		
 MUSICA_RESET:
 	reset()	#reseta a musica
 	jr s5	
@@ -453,6 +524,8 @@ MUSICA_RESET:
 #             	 FASES                    #
 #                                         #
 ###########################################
+
+
 
 #=================================FASES=============================
 #FASE1
@@ -488,8 +561,12 @@ jal s5, CORACAO
 Imprimepersonagem(0xFF008C20, 0xFF108C20, NEXT1)
 
 NEXT1:
+la t0, DIRECAO_LAMAR
+li t1, 1
+sw t1, 0(t0)
+
 jal s5, MUSICA_RESET	#reseta os conatdores da musica, ela toca desde o inicio
-j ANDARLAMAR
+Impressaopequena(caixa,0xFF00DCA0,0xFF10DCA0, 0, 0x130, ANDARLAMAR)
 
 BAU_ABERTA_MAPA1:
 Impressaopequena(bauaberto,0xFF00DC50,0xFF10DC50, 0, 0x130, RETORNA_JR)
@@ -499,6 +576,8 @@ Impressaopequena(portaaberta,0xFF0014A0,0xFF1014A0, 0, 0x130, RETORNA_JR)
 
 #FASE2
 IMPRIME_FASE2:	
+	jal s5, MUSICA_RESET		
+	jal s5, MUSICA3
 	ImpressaoF(Transicao2, 0xFF100000, 0, TROCA_FRAMEII)	#tela de transi???????¡ìao com informa???????¡ìoes da fase e senha
 	TROCA_FRAMEII:
 		Frame(1)
@@ -510,9 +589,7 @@ IMPRIME_FASE2:
 		li s2, 2	#determina que lamar esta na primeira fase, para quando ele morrer dar respawn na fase certa	
 		Impressao(MAPA2, 0xFF000000, 0xFF100000, 0, VIDA)
 		
-
 IMPRIME_PERSONAGEM2:
-
 #==========Equivalendo valores de power=======
 la t0, ABRIR_BAU	# endere???¡ìo do POWER_LAMAR
 
@@ -576,12 +653,13 @@ RECEBE_TECLA:
 	beq t2, t5, COLISAOESQ		# verifica colisao para esquerda
 	beq t2, t4, COLISAOCIMA		# verifica colisao para cima
 	beq t2, t3, COLISAOBAIXO	# verifica colisao para baixo
+	beq t2, t0, VERIFICADIRECAO	# verifica a direcao que personagem esta virado para iniciar a rotina do ataque
 
 	li t0, 27			# ascii de "esc" para verificar se foi pressionado
 	beq t2, t0, VIDA_DIMINUI 	#seppuku
 
-	li t0, 112
-	beq t2, t0, PASSWORD_T
+	li t0, 112			#ascii de "p" para verificar se foi pressionada
+	beq t2, t0, PASSWORD_T		#entra na tela de password
 
 
 COLISAODIR:
@@ -598,7 +676,9 @@ COLISAODIR:
 	beq s6, t2, CAIXADIR # se o pixel for da mesma cor da caixa va pra CAIXADIR
 	beq s6, t3, BAUDIR # se o pixel for da mesma cor da caixa va pra BAUDIR
 	beq s6, t4, CORACAODIR # se o pixel for da mesma cor da caixa va pra CORACAODIR
+	li s1, 0	#Volta o estado do Lamar para o padrao, que e s1 = 0 para andar
 	j RECEBE_TECLA # caso contrario, eh um obstaculo
+
 
 COLISAODIR2:
 	#mesma coisa do codigo de cima, porem analisa outro pixel
@@ -608,7 +688,7 @@ COLISAODIR2:
 	add a6, s10, t1
 	li t0, 10
 	lb s6 0(a6)
-	beq s6, t0, APAGADIR
+	beq s6, t0, VERIFICA_ACAO_DIR
 	j RECEBE_TECLA
 
 CAIXADIR:
@@ -643,12 +723,27 @@ CAIXADIR:
 			lb s6 0(a6)
 			beq s6, t0, CAIXADIR4
 			j RECEBE_TECLA
-
+				
 			CAIXADIR4:
-				#Imprime a caixa +8 da posicao atual
 				#posicao atual da caixa = ( s10 + 8 ) + 16
-				j APAGADIR
-
+				li s6, 0
+				li a6, 0
+				li t1, 24
+				add a6, s10, t1
+				li t2, 0x100000
+				add s6, a6, t2
+				jal s5, CAIXA_T
+				
+				CAIXADIR5:
+					#Imprime a caixa +8 da posicao atual
+					li s6, 0
+					li a6, 0
+					li t1, 32
+					add a6, s10, t1
+					li t2, 0x100000
+					add s6, a6, t2
+					jal s5, CAIXA2_T
+					j APAGADIR
 CORACAODIR:
 	#mesma coisa do codigo de cima, porem analisa outro pixel
 	li s6, 0
@@ -687,7 +782,15 @@ BAUDIR:
 
 		BAUDIR2:
 			jal s5, BAU_PORTA
-			j APAGADIR
+			#Imprime bau vazio no lugar do bau:
+			li s6, 0
+			li a6, 0
+			li t1, 24
+			add a6, s10, t1
+			li t2, 0x100000
+			add s6, a6, t2
+			ImpressaopequenaC(bauvazio, a6, s6, 0, 304, RECEBE_TECLA)
+
 
 COLISAOESQ:
 	li t1, 963 # posicao do pixel a ser analisado a partir da posicao do lolo
@@ -703,6 +806,7 @@ COLISAOESQ:
 	beq s6, t2, CAIXAESQ # se o pixel for da mesma cor da caixa va pra CAIXAESQ
 	beq s6, t3, BAUESQ # se o pixel for da mesma cor da caixa va pra BAUESQ
 	beq s6, t4, CORACAOESQ # se o pixel for da mesma cor da caixa va pra CORACAOESQ
+	li s1, 0	#Volta o estado do Lamar para o padrao, que e s1 = 0 para andar
 	j RECEBE_TECLA # caso contrario, eh um obstaculo
 
 
@@ -714,7 +818,7 @@ COLISAOESQ2:
 	add a6, s10, t1
 	li t0, 10
 	lb s6 0(a6)
-	beq s6, t0, APAGAESQ
+	beq s6, t0, VERIFICA_ACAO_ESQ
 	j RECEBE_TECLA
 
 CAIXAESQ:
@@ -751,10 +855,26 @@ CAIXAESQ:
 			j RECEBE_TECLA 
 
 			CAIXAESQ4:
-				#Imprime a caixa -8 da posicao atual
+				#Imprime chao no lugar da caixa
 				#posicao atual da caixa = ( s10 + 8 ) - 16
-				j APAGAESQ
-
+				li s6, 0
+				li a6, 0
+				li t1, -8
+				add a6, s10, t1
+				li t2, 0x100000
+				add s6, a6, t2
+				jal s5, CAIXA_T
+				
+				CAIXAESQ5:
+					#Imprime a caixa -8 da posicao atual
+					li s6, 0
+					li a6, 0
+					li t1, -16
+					add a6, s10, t1
+					li t2, 0x100000
+					add s6, a6, t2
+					jal s5, CAIXA2_T
+					j APAGAESQ
 CORACAOESQ:
 	#mesma coisa do codigo de cima, porem analisa outro pixel
 	li s6, 0
@@ -765,6 +885,20 @@ CORACAOESQ:
 	lb s6 0(a6)
 	beq s6, t0, CORACAOESQ2
 	j RECEBE_TECLA
+	
+#===============TRAMPOLIM 1 ATAQUES===========================#
+ATACADIR2_T:
+j ATACADIR2_T2
+
+ATACACIMA2_T:
+j ATACACIMA2_T2
+
+ATACAESQ2_T:
+j ATACAESQ2_T2
+
+ATACABAIXO2_T:
+j ATACABAIXO2_T2
+#=============================================================# 	
 
 	CORACAOESQ2:
 		#Imprime meio chao no lugar do coracao:
@@ -793,7 +927,15 @@ BAUESQ:
 
 	BAUESQ2:
 		jal s5, BAU_PORTA
-		j APAGAESQ
+		#Imprime bau vazio no lugar do bau:
+		li s6, 0
+		li a6, 0
+		li t1, -8
+		add a6, s10, t1
+		li t2, 0x100000
+		add s6, a6, t2
+		ImpressaopequenaC(bauvazio, a6, s6, 0, 304, RECEBE_TECLA)
+
 
 COLISAOCIMA:
 	li t1, -1909  # posicao do pixel a ser analisado a partir da posicao do lolo
@@ -811,6 +953,7 @@ COLISAOCIMA:
 	beq s6, t3, BAUCIMA # se o pixel for da mesma cor da caixa va pra BAUCIMA
 	beq s6, t4, CORACAOCIMA # se o pixel for da mesma cor da caixa va pra CORACAOCIMA
 	beq s6, t5, PORTA # se o pixel for da mesma cor da caixa va pra PORTA
+	li s1, 0	#Volta o estado do Lamar para o padrao, que e s1 = 0 para andar
 	j RECEBE_TECLA # caso contrario, eh um obstaculo
 
 COLISAOCIMA2:
@@ -821,7 +964,7 @@ COLISAOCIMA2:
 	add a6, s10, t1
 	li t0, 10
 	lb s6 0(a6)
-	beq s6, t0, APAGACIMA
+	beq s6, t0, VERIFICA_ACAO_CIMA
 	j RECEBE_TECLA
 
 PORTA:
@@ -869,9 +1012,26 @@ CAIXACIMA:
 			j RECEBE_TECLA
 
 			CAIXACIMA4:
-				#Imprime a caixa -2560 da posicao atual
+				#Imprime chao no lugar da caixa
 				#posicao atual da caixa = ( s10 + 8 ) - 5120
-				j APAGACIMA
+				li s6, 0
+				li a6, 0
+				li t1, -5112
+				add a6, s10, t1
+				li t2, 0x100000
+				add s6, a6, t2
+				jal s5, CAIXA_T
+				
+				CAIXACIMA5:
+					#Imprime a caixa -2560 da posicao atual
+					li s6, 0
+					li a6, 0
+					li t1, -7672
+					add a6, s10, t1
+					li t2, 0x100000
+					add s6, a6, t2
+					jal s5, CAIXA2_T
+					j APAGACIMA
 
 CORACAOCIMA:
 	#mesma coisa do codigo de cima, porem analisa outro pixel
@@ -909,9 +1069,17 @@ BAUCIMA:
 	beq s6, t0, BAUCIMA2
 	j RECEBE_TECLA
 
-BAUCIMA2:
-	jal s5, BAU_PORTA
-	j APAGACIMA
+	BAUCIMA2:
+		jal s5, BAU_PORTA
+		#Imprime bau vazio no lugar do bau:
+		li s6, 0
+		li a6, 0
+		li t1, -5112
+		add a6, s10, t1
+		li t2, 0x100000
+		add s6, a6, t2
+		ImpressaopequenaC(bauvazio, a6, s6, 0, 304, RECEBE_TECLA)
+
 
 
 COLISAOBAIXO:
@@ -928,6 +1096,7 @@ COLISAOBAIXO:
 	beq s6, t2, CAIXABAIXO # se o pixel for da mesma cor da caixa va pra CAIXABAIXO
 	beq s6, t3, BAUBAIXO # se o pixel for da mesma cor da caixa va pra BAUBAIXO
 	beq s6, t4, CORACAOBAIXO # se o pixel for da mesma cor da caixa va pra CORACAOBAIXO
+	li s1, 0	#Volta o estado do Lamar para o padrao, que e s1 = 0 para andar
 	j RECEBE_TECLA # caso contrario, eh um obstaculo
 
 COLISAOBAIXO2:
@@ -938,7 +1107,7 @@ COLISAOBAIXO2:
 	add a6, s10, t1
 	li t0, 10
 	lb s6 0(a6)
-	beq s6, t0, APAGABAIXO
+	beq s6, t0, VERIFICA_ACAO_BAIXO
 	j RECEBE_TECLA	
 
 CAIXABAIXO:
@@ -975,8 +1144,25 @@ CAIXABAIXO:
 			j RECEBE_TECLA
 
 			CAIXABAIXO4:
-				#Imprime a caixa +2560 da posicao atual
+				#Imprime a chao na posicao atual da caixa
 				#posicao atual da caixa = ( s10 + 8 ) + 5120
+				li s6, 0
+				li a6, 0
+				li t1, 5128
+				add a6, s10, t1
+				li t2, 0x100000
+				add s6, a6, t2
+				jal s5, CAIXA_T
+				
+				COLISAOBAIXO5:
+				#Imprime a caixa +2560 da posicao atual
+				li s6, 0
+				li a6, 0
+				li t1, 7688
+				add a6, s10, t1
+				li t2, 0x100000
+				add s6, a6, t2
+				jal s5, CAIXA2_T
 				j APAGABAIXO
 
 CORACAOBAIXO:
@@ -1017,13 +1203,117 @@ BAUBAIXO:
 
 	BAUBAIXO2:
 		jal s5, BAU_PORTA
-		j APAGABAIXO
+		#Imprime bau vazio no lugar do bau:
+		li s6, 0
+		li a6, 0
+		li t1, 5128
+		add a6, s10, t1
+		li t2, 0x100000
+		add s6, a6, t2
+		ImpressaopequenaC(bauvazio, a6, s6, 0, 304, RECEBE_TECLA)
+		
+##############################################################################################################################
+VERIFICADIRECAO:
+li s1, 1			#Se s1 = 1, indica que o personagem esta atacando
+la t0, DIRECAO_LAMAR
+lw t0, 0(t0)
+li t1, 1
+li t2, 2
+li t3, 3
+li t4, 4
+beq t0, t1, COLISAODIR		#Se o lamar estiver virado pra direita
+beq t0, t2, COLISAOCIMA		#Se o lamar estiver virado pra cima
+beq t0, t3, COLISAOESQ		#Se o lamar estiver virado pra esquerda
+beq t0, t4, COLISAOBAIXO	#Se o lamar estiver virado pra baixo
+
+VERIFICA_ACAO_DIR:
+li t0, 1
+beq s1, zero, APAGADIR		#Se o lamar nao estiver atacando, ele esta andando, pula pra rotina de andar
+beq s1, t0, ATACADIR		#Se o lamar estiver atacando, rotina de ataque
+
+VERIFICA_ACAO_CIMA:
+li t0, 1
+beq s1, zero, APAGACIMA		#Se o lamar nao estiver atacando, ele esta andando, pula pra rotina de andar
+beq s1, t0, ATACACIMA		#Se o lamar estiver atacando, rotina de ataque
+
+VERIFICA_ACAO_ESQ:
+li t0, 1
+beq s1, zero, APAGAESQ		#Se o lamar nao estiver atacando, ele esta andando, pula pra rotina de andar
+beq s1, t0, ATACAESQ		#Se o lamar estiver atacando, rotina de ataque
+
+VERIFICA_ACAO_BAIXO:
+li t0, 1
+beq s1, zero, APAGABAIXO	#Se o lamar nao estiver atacando, ele esta andando, pula pra rotina de andar
+beq s1, t0, ATACABAIXO		#Se o lamar estiver atacando, rotina de ataque
+
+#-----------------------------------------------------------#
+ATACADIR:
+la t0, POSICAO_LAMAR
+lw t1, 0(t0)			# Recebe as posicoes do lamar nos dois frames para imprimir o raio 16px a frente
+lw t2, 4(t0)
+li t3, 24			# Quantos pixels a frente do lamar ele imprime o ataque
+add s6, t1, t3
+add s8, t2, t3
+li s1, 0
+ImpressaopequenaC(ataquelamardir, s6, s8, 0, 0x130, ATACADIR2)
+
+ATACADIR2:
+j ATACADIR2_T
+
+#----------------------------------------------------------#
+
+ATACACIMA:
+la t0, POSICAO_LAMAR
+lw t1, 0(t0)			# Recebe as posicoes do lamar nos dois frames para imprimir o raio 16px a frente
+lw t2, 4(t0)
+li t3, -0x13F8			# Quantos pixels a frente do lamar ele imprime o ataque
+add s6, t1, t3
+add s8, t2, t3
+li s1, 0
+ImpressaopequenaC(ataquelamar, s6, s8, 0, 0x130, ATACACIMA2)
+
+ATACACIMA2:
+j ATACACIMA2_T
+
+
+#----------------------------------------------------------#
+
+ATACAESQ:
+la t0, POSICAO_LAMAR
+lw t1, 0(t0)			# Recebe as posicoes do lamar nos dois frames para imprimir o raio 16px a frente
+lw t2, 4(t0)
+li t3, -8			# Quantos pixels a frente do lamar ele imprime o ataque
+add s6, t1, t3
+add s8, t2, t3
+li s1, 0
+ImpressaopequenaC(ataquelamaresq, s6, s8, 0, 0x130, ATACAESQ2)
+
+ATACAESQ2:
+j ATACAESQ2_T
+#----------------------------------------------------------#
+
+ATACABAIXO:
+la t0, POSICAO_LAMAR
+lw t1, 0(t0)			# Recebe as posicoes do lamar nos dois frames para imprimir o raio 16px a frente
+lw t2, 4(t0)
+li t3, 0x1408			# Quantos pixels a frente do lamar ele imprime o ataque
+add s6, t1, t3
+add s8, t2, t3
+li s1, 0
+ImpressaopequenaC(ataquelamar, s6, s8, 100, 0x130, ATACABAIXO2)
+
+ATACABAIXO2:
+j ATACABAIXO2_T
+
 
 
 APAGADIR:
+
 Apagachao(8)
 
 ANDA_DIR:
+li t1, 1
+sh t1, DIRECAO_LAMAR, t0
 Anda(lamardir_walk)	#Sprite andando para anima??¨¬??o
 Trocaframe(65)		#Delay m??nimo para que a anima??¨¬??o possa ser vista
 Apagachao(0)		#Apaga a sprite para n??o ocorrer sobreposi??¨¬??o
@@ -1037,6 +1327,8 @@ Apagachao(-8)
 
 
 ANDA_ESQ:
+li t1, 3
+sh t1, DIRECAO_LAMAR, t0
 Anda(lamaresq_walk)
 Trocaframe(65)
 Apagachao(0)
@@ -1049,8 +1341,9 @@ APAGACIMA:
 Apagachao(-0xA00)
 
 ANDA_CIMA:
+li t1, 2
+sh t1, DIRECAO_LAMAR, t0
 Anda(lamarcima_walk)
-
 Trocaframe(65)
 Apagachao(0)
 Anda(lamarcima)
@@ -1062,6 +1355,8 @@ APAGABAIXO:
 Apagachao(0xA00)
 
 ANDA_BAIXO:
+li t1, 4
+sh t1, DIRECAO_LAMAR, t0
 Anda(lamarbaixo_walk)
 Trocaframe(65)
 Apagachao(0)
@@ -1094,6 +1389,10 @@ RETORNA:ret
 .include "./Imagens/lamarbaixo_walk.data"
 .include "./Imagens/lamarcima.data"
 .include "./Imagens/lamarcima_walk.data"
+.include "./Imagens/ataquelamar.data"
+.include "./Imagens/ataquelamardir.data"
+.include "./Imagens/ataquelamaresq.data"
+
 
 #Historia inicial
 .include "./Imagens/basehistoria.data"
@@ -1127,7 +1426,8 @@ RETORNA:ret
 .include "./Imagens/password2.data"
 .include "./Imagens/Barra_selecao.data"
 
-.include "./Imagens/meiochao.data"	
+.include "./Imagens/meiochao.data"
+.include "./Imagens/bauvazio.data"		
 
 #itens mapa																																																																																																																														
 .include "./Imagens/caixa.data"
